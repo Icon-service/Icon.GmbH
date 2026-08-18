@@ -1,0 +1,44 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { containerModelle } from "../../data/containerModelle";
+import { useTranslations, localizedPath } from "../../i18n/utils";
+
+const lang = "de" as const;
+const t = useTranslations(lang);
+---
+
+<Layout
+  title={t("models.overview.title")}
+  description="ICON Eco, ICON Eco Plus, ICON Standard, ICON Comfort, ICON Protect, ICON Technik — die sechs Container-Modellreihen der ICON GmbH."
+  altPath="/en/container-models"
+>
+  <section class="border-b border-line">
+    <div class="mx-auto max-w-(--container-wide) px-6 py-16">
+      <p class="icon-topline">{t("hero.eyebrow")}</p>
+      <h1 class="mt-3 text-4xl sm:text-5xl">{t("models.overview.title")}</h1>
+      <p class="mt-4 max-w-xl text-lg text-steel">{t("models.overview.lead")}</p>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-(--container-wide) px-6 py-16">
+    <div class="grid gap-6 lg:grid-cols-2">
+      {containerModelle.map((m) => (
+        <div class="rounded border border-line p-6">
+          <h2 class="text-2xl text-ink">{m.name}</h2>
+          <p class="mt-1.5 text-sm font-semibold text-signal">{m.tagline[lang]}</p>
+          <p class="mt-3 text-steel">{m.description[lang]}</p>
+          <ul class="mt-4 space-y-2">
+            {m.features[lang].map((f) => (
+              <li class="border-l-2 border-line pl-3 text-sm text-steel">{f}</li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-14 rounded border border-line bg-mist p-6 sm:p-8">
+      <p class="text-lg text-ink">Welches Modell zu Ihrem Projekt passt, klären wir gemeinsam.</p>
+      <a href={localizedPath("contact", lang)} class="btn-primary mt-4 inline-block">{t("nav.cta")}</a>
+    </div>
+  </section>
+</Layout>

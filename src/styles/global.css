@@ -1,0 +1,109 @@
+@import "tailwindcss";
+
+@import "@fontsource-variable/inter";
+
+/*
+  Token system — ported 1:1 from the real ICON GmbH brand system found in
+  the prior WordPress theme (theme.json palette + compiled site.css):
+  Ink / Graphite / Steel / Mist / White with Signal red-orange as the
+  single accent, and Inter as the sole typeface across the site.
+*/
+@theme {
+  --color-ink: #15181b;
+  --color-graphite: #2b3035;
+  --color-steel: #64717c;
+  --color-mist: #eef1f3;
+  --color-paper: #ffffff;
+  --color-signal: #c84a2f;
+  --color-signal-dark: #8f2f1d;
+  --color-line: #dde2e5;
+
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+
+  --container-content: 70rem;
+  --container-wide: 85rem;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+body {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  line-height: 1.55;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 760;
+  line-height: 1.05;
+  color: var(--color-ink);
+}
+
+::selection {
+  background-color: var(--color-signal);
+  color: var(--color-paper);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 2px;
+}
+
+/* Eyebrow / section label — matches the original .icon-topline treatment exactly. */
+.icon-topline {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--color-signal);
+}
+
+.btn-primary {
+  display: inline-block;
+  border-radius: 4px;
+  background-color: var(--color-signal);
+  color: var(--color-paper);
+  font-weight: 700;
+  padding: 0.85rem 1.1rem;
+  transition: background-color 0.15s ease;
+}
+.btn-primary:hover {
+  background-color: var(--color-signal-dark);
+}
+
+.btn-outline {
+  display: inline-block;
+  border-radius: 4px;
+  border: 1px solid currentColor;
+  font-weight: 700;
+  padding: 0.85rem 1.1rem;
+  transition: opacity 0.15s ease;
+}
+.btn-outline:hover {
+  opacity: 0.7;
+}
+
+a {
+  color: var(--color-signal);
+}
+a:hover {
+  color: var(--color-signal-dark);
+}

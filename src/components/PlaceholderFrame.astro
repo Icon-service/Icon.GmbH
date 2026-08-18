@@ -1,0 +1,19 @@
+---
+// Blueprint-grid placeholder for project photography that hasn't been
+// supplied yet. Swap for a real <img> once assets land in /public.
+type Props = { label: string; class?: string };
+const { label, class: className = "" } = Astro.props as Props;
+---
+
+<div
+  class={`relative flex aspect-4/3 items-end overflow-hidden border border-line bg-steel ${className}`}
+  style="background-image: linear-gradient(rgba(250,249,246,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(250,249,246,0.06) 1px, transparent 1px); background-size: 24px 24px;"
+>
+  <span class="absolute left-3 top-3 h-3 w-3 border-l border-t border-paper/30"></span>
+  <span class="absolute right-3 top-3 h-3 w-3 border-r border-t border-paper/30"></span>
+  <span class="absolute bottom-3 left-3 h-3 w-3 border-b border-l border-paper/30"></span>
+  <span class="absolute bottom-3 right-3 h-3 w-3 border-b border-r border-paper/30"></span>
+  <span class="relative z-10 w-full bg-ink/80 p-3 text-[11px] font-bold uppercase tracking-wider text-paper/70">
+    {label}
+  </span>
+</div>

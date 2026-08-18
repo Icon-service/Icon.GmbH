@@ -1,0 +1,63 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { useTranslations } from "../i18n/utils";
+
+const lang = "de" as const;
+const t = useTranslations(lang);
+---
+
+<Layout
+  title={t("contact.title")}
+  description="Kontaktieren Sie ICON GmbH für Ihr Container-, Modul- oder Stahlbauprojekt."
+  altPath="/en/contact"
+>
+  <section class="border-b border-line">
+    <div class="mx-auto max-w-(--container-wide) px-6 py-16">
+      <p class="icon-topline">{t("hero.eyebrow")}</p>
+      <h1 class="mt-3 text-4xl sm:text-5xl">{t("contact.title")}</h1>
+      <p class="mt-4 max-w-xl text-lg text-steel">{t("contact.lead")}</p>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-(--container-wide) px-6 py-16">
+    <div class="grid gap-12 lg:grid-cols-[1.3fr_1fr]">
+      <!-- TODO: wire up a form backend (e.g. serverless function or form service) before launch -->
+      <form class="grid gap-5 sm:grid-cols-2" method="post" action="#">
+        <label class="flex flex-col gap-1.5 sm:col-span-1">
+          <span class="text-xs font-bold uppercase tracking-wider text-steel">{t("contact.form.name")}</span>
+          <input type="text" name="name" required class="rounded border border-line bg-paper px-3 py-2.5 text-sm text-ink focus:border-signal focus:outline-none" />
+        </label>
+        <label class="flex flex-col gap-1.5 sm:col-span-1">
+          <span class="text-xs font-bold uppercase tracking-wider text-steel">{t("contact.form.company")}</span>
+          <input type="text" name="company" class="rounded border border-line bg-paper px-3 py-2.5 text-sm text-ink focus:border-signal focus:outline-none" />
+        </label>
+        <label class="flex flex-col gap-1.5 sm:col-span-1">
+          <span class="text-xs font-bold uppercase tracking-wider text-steel">{t("contact.form.email")}</span>
+          <input type="email" name="email" required class="rounded border border-line bg-paper px-3 py-2.5 text-sm text-ink focus:border-signal focus:outline-none" />
+        </label>
+        <label class="flex flex-col gap-1.5 sm:col-span-1">
+          <span class="text-xs font-bold uppercase tracking-wider text-steel">{t("contact.form.phone")}</span>
+          <input type="tel" name="phone" class="rounded border border-line bg-paper px-3 py-2.5 text-sm text-ink focus:border-signal focus:outline-none" />
+        </label>
+        <label class="flex flex-col gap-1.5 sm:col-span-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-steel">{t("contact.form.message")}</span>
+          <textarea name="message" rows="5" required class="rounded border border-line bg-paper px-3 py-2.5 text-sm text-ink focus:border-signal focus:outline-none"></textarea>
+        </label>
+        <button type="submit" class="btn-primary sm:col-span-2 mt-2 w-fit">
+          {t("contact.form.submit")}
+        </button>
+      </form>
+
+      <div class="h-fit rounded border border-line bg-mist p-6">
+        <h2 class="text-lg text-ink">{t("contact.direct")}</h2>
+        <p class="mt-4 text-steel">
+          {t("footer.contact.label")}: <a href="mailto:info@icon.gmbh" class="font-semibold text-signal hover:text-signal-dark">info@icon.gmbh</a><br />
+          {t("footer.contact.area")}
+        </p>
+        <p class="mt-6 border-t border-line pt-4 text-xs text-steel">
+          Anfragen zu militärischer Infrastruktur werden vertraulich behandelt.
+        </p>
+      </div>
+    </div>
+  </section>
+</Layout>

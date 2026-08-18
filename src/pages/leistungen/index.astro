@@ -1,0 +1,36 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import PlaceholderFrame from "../../components/PlaceholderFrame.astro";
+import { leistungen } from "../../data/leistungen";
+import { useTranslations, localizedPath } from "../../i18n/utils";
+
+const lang = "de" as const;
+const t = useTranslations(lang);
+---
+
+<Layout
+  title={t("services.overview.title")}
+  description="Containerbau, Modulbau, Stahlbau & Hallen, militärische Infrastruktur, Unterkunftsanlagen und Interim-Gebäude — die Leistungsbereiche der ICON GmbH."
+  altPath="/en/services"
+>
+  <section class="border-b border-line">
+    <div class="mx-auto max-w-(--container-wide) px-6 py-16">
+      <p class="icon-topline">{t("hero.eyebrow")}</p>
+      <h1 class="mt-3 text-4xl sm:text-5xl">{t("services.overview.title")}</h1>
+      <p class="mt-4 max-w-xl text-lg text-steel">{t("services.overview.lead")}</p>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-(--container-wide) px-6 py-16">
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {leistungen.map((l, i) => (
+        <a href={localizedPath("services", lang, l.slugDe)} class="group rounded border border-line p-5 transition-colors hover:border-signal">
+          <PlaceholderFrame label={`${l.name[lang]} Bild folgt`} class="mb-4" />
+          <p class="text-sm font-bold text-steel">{String(i + 1).padStart(2, "0")}</p>
+          <h2 class="mt-1 text-xl text-ink group-hover:text-signal">{l.name[lang]}</h2>
+          <p class="mt-2 text-sm text-steel">{l.homeCardText[lang]}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+</Layout>

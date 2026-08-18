@@ -1,0 +1,59 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import BlockRenderer from "../../components/BlockRenderer.astro";
+import { leistungen } from "../../data/leistungen";
+import { useTranslations, localizedPath } from "../../i18n/utils";
+
+export function getStaticPaths() {
+  return leistungen.map((l) => ({
+    params: { slug: l.slugDe },
+    props: { leistung: l },
+  }));
+}
+
+const lang = "de" as const;
+const t = useTranslations(lang);
+const { leistung } = Astro.props;
+---
+
+<Layout
+  title={leistung.name[lang]}
+  description={leistung.heroLead[lang]}
+  altPath={`/en/services/${leistung.slugEn}`}
+>
+  <section class="border-b border-line">
+    <div class="mx-auto max-w-(--container-wide) px-6 py-16">
+      <a href={localizedPath("services", lang)} class="text-sm font-semibold text-steel hover:text-signal">
+        ← {t("services.overview.title")}
+      </a>
+      <h1 class="mt-3 text-4xl sm:text-5xl">{leistung.name[lang]}</h1>
+      <p class="mt-4 max-w-2xl text-lg text-steel">{leistung.heroLead[lang]}</p>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-(--container-wide) px-6 py-16">
+    {leistung.blocksDe.length > 0 ? (
+      <BlockRenderer blocks={leistung.blocksDe} />
+    ) : (
+      <p class="max-w-2xl text-steel">Weitere Details zu diesem Leistungsbereich folgen in Kürze.</p>
+    )}
+
+    <div class="mt-14 rounded border border-line bg-mist p-6 sm:p-8">
+      <p class="text-lg text-ink">
+        {leistung.ctaLabel
+          ? "Sie planen ein Projekt in diesem Bereich?"
+          : "Sie planen einen Standort oder ein Gebäude in diesem Bereich?"}
+      </p>
+      <div class="mt-4 flex flex-wrap gap-4">
+        <a href={leistung.ctaHref ?? localizedPath("contact", lang)} class="btn-primary">
+          {leistung.ctaLabel?.[lang] ?? t("nav.cta")}
+        </a>
+        {leistung.ctaHref !== localizedPath("contact", lang) && (
+          <a href={localizedPath("contact", lang)} class="btn-outline text-ink">
+            {t("nav.cta")}
+          </a>
+        )}
+      </div>
+    </div>
+  </section>
+</Layout>

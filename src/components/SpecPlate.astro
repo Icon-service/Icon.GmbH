@@ -1,0 +1,43 @@
+---
+// Card used for container models / service teasers — a nod to the stamped
+// steel rating plate ("Typenschild") riveted to every container and
+// structural member: an eyebrow code, a title, and short spec rows.
+type Props = {
+  eyebrow: string;
+  title: string;
+  tagline?: string;
+  href?: string;
+  rows?: { label: string; value: string }[];
+};
+
+const { eyebrow, title, tagline, href, rows = [] } = Astro.props as Props;
+const Tag = href ? "a" : "div";
+---
+
+<Tag href={href} class="group relative block rounded border border-line bg-paper p-6 transition-colors hover:border-signal">
+  <span class="absolute left-2 top-2 h-1.5 w-1.5 rounded-full bg-ink/10 group-hover:bg-signal/30"></span>
+  <span class="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-ink/10 group-hover:bg-signal/30"></span>
+  <span class="absolute bottom-2 left-2 h-1.5 w-1.5 rounded-full bg-ink/10 group-hover:bg-signal/30"></span>
+  <span class="absolute bottom-2 right-2 h-1.5 w-1.5 rounded-full bg-ink/10 group-hover:bg-signal/30"></span>
+
+  <p class="icon-topline">{eyebrow}</p>
+  <h3 class="mt-2 text-2xl text-ink">{title}</h3>
+  {tagline && <p class="mt-2 text-sm text-steel">{tagline}</p>}
+
+  {rows.length > 0 && (
+    <dl class="mt-5 space-y-1.5 border-t border-line pt-4">
+      {rows.map((row) => (
+        <div class="flex justify-between gap-4 text-[13px] text-steel">
+          <span>{row.label}</span>
+          <span class="text-ink">{row.value}</span>
+        </div>
+      ))}
+    </dl>
+  )}
+
+  {href && (
+    <span class="mt-5 inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-ink group-hover:text-signal">
+      →
+    </span>
+  )}
+</Tag>

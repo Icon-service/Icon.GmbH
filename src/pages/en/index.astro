@@ -1,0 +1,172 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import PlaceholderFrame from "../../components/PlaceholderFrame.astro";
+import { leistungen } from "../../data/leistungen";
+import { localizedPath } from "../../i18n/utils";
+
+const lang = "en" as const;
+
+const proof = [
+  { title: "Planning", text: "Layouts, technical data, structural design, details and documentation" },
+  { title: "Delivery", text: "Container construction, modular building, steel construction, transport and installation" },
+  { title: "Project range", text: "Industry, municipalities, education, accommodation and security-relevant sites" },
+];
+
+const process = [
+  { n: "01", title: "Clarify needs", text: "Capture use, headcount, timeframe, site, protection needs and interfaces." },
+  { n: "02", title: "Plan the solution", text: "Align layout, system, fit-out, technical services, structure, foundation and logistics." },
+  { n: "03", title: "Prepare delivery", text: "Coordinate fabrication, procurement, technical documents, transport and installation sequence." },
+  { n: "04", title: "Hand over", text: "Close out installation, site supervision, documentation, acceptance and future expansion." },
+];
+---
+
+<Layout
+  title="Modular buildings and robust infrastructure from a single source"
+  description="ICON plans, delivers and coordinates container solutions, modular buildings, steel and hall projects, and security-relevant infrastructure."
+  altPath="/"
+>
+  <section class="border-b border-line">
+    <div class="mx-auto grid max-w-(--container-wide) gap-10 px-6 py-16 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:py-24">
+      <div>
+        <p class="icon-topline">{"ICON GmbH | Container Construction, Modular Building, Steel & Infrastructure"}</p>
+        <h1 class="mt-4 text-[clamp(2.35rem,6vw,4.2rem)]">Modular buildings and robust infrastructure from a single source</h1>
+        <p class="mt-5 max-w-xl text-lg text-steel">
+          ICON plans, delivers and coordinates container solutions, modular buildings, steel and
+          hall projects, and security-relevant infrastructure — for sites that need to move fast,
+          hold up, and stay well documented.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-4">
+          <a href={localizedPath("contact", lang)} class="btn-primary">Request a project</a>
+          <a href={localizedPath("services", lang)} class="btn-outline text-ink">View services</a>
+        </div>
+      </div>
+      <PlaceholderFrame label="Hero image coming soon" />
+    </div>
+
+    <div class="border-t border-line">
+      <div class="mx-auto grid max-w-(--container-wide) gap-8 px-6 py-10 sm:grid-cols-3">
+        {proof.map((p) => (
+          <div>
+            <h3 class="text-lg text-ink">{p.title}</h3>
+            <p class="mt-1.5 text-sm text-steel">{p.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-(--container-wide) px-6 py-16 lg:py-20">
+    <p class="icon-topline">What we build</p>
+    <h2 class="mt-2 max-w-2xl text-3xl sm:text-4xl">Service areas that work individually and become stronger together</h2>
+    <div class="mt-5 max-w-2xl space-y-3 text-steel">
+      <p>Many projects don't fit neatly into one category. A site might need containers, a modular building, steel substructures, technical fit-out, sanitary facilities, protection, or a fast interim solution.</p>
+      <p>ICON connects these areas wherever it makes sense for the project — with clear planning, the right systems, and delivery that's prepared for installation, operation and later expansion.</p>
+    </div>
+
+    <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {leistungen.map((l, i) => (
+        <div class="rounded border border-line p-5">
+          <PlaceholderFrame label={`${l.name[lang]} image coming soon`} class="mb-4" />
+          <p class="text-sm font-bold text-steel">{String(i + 1).padStart(2, "0")}</p>
+          <h3 class="mt-1 text-xl text-ink">{l.name[lang]}</h3>
+          <p class="mt-2 text-sm text-steel">{l.homeCardText[lang]}</p>
+          <a href={localizedPath("services", lang, l.slugEn)} class="mt-3 inline-block text-sm font-bold text-signal hover:text-signal-dark">
+            Learn more →
+          </a>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="border-t border-line bg-mist">
+    <div class="mx-auto grid max-w-(--container-wide) gap-10 px-6 py-16 lg:grid-cols-[1fr_1.1fr] lg:items-center lg:py-20">
+      <PlaceholderFrame label="Container & modular image coming soon" />
+      <div>
+        <p class="icon-topline">Container & Modular</p>
+        <h2 class="mt-2 text-3xl sm:text-4xl">From a single room to a whole building</h2>
+        <p class="mt-4 text-steel">
+          Container construction suits fast, robust, clearly costed space solutions. Modular
+          construction extends that approach into full buildings — with access, room programme,
+          facades, building services and operator requirements.
+        </p>
+        <div class="mt-6 grid gap-6 sm:grid-cols-2">
+          <div>
+            <h3 class="text-lg text-ink">Container construction</h3>
+            <p class="mt-1.5 text-sm text-steel">Product-based, fast and flexible — ideal for offices, sanitary, accommodation, technical, storage and custom builds.</p>
+          </div>
+          <div>
+            <h3 class="text-lg text-ink">Modular construction</h3>
+            <p class="mt-1.5 text-sm text-steel">Building-oriented and more planning-intensive — suited to schools, kindergartens, administration, universities and interim space.</p>
+          </div>
+        </div>
+        <div class="mt-6 flex flex-wrap gap-4">
+          <a href={localizedPath("services", lang, "container-construction")} class="btn-primary">Container construction</a>
+          <a href={localizedPath("services", lang, "modular-construction")} class="btn-outline text-ink">Modular construction</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-ink text-paper">
+    <div class="mx-auto max-w-(--container-wide) px-6 py-16 lg:py-20">
+      <div class="flex flex-wrap items-start justify-between gap-6">
+        <div>
+          <p class="icon-topline">Robust & secure</p>
+          <h2 class="mt-2 max-w-xl text-3xl sm:text-4xl text-paper">Thinking steel construction and security-relevant infrastructure together</h2>
+        </div>
+        <p class="max-w-md text-mist">
+          At many sites it's not just about rooms — it's about structures, foundations,
+          technical services, protection, installation sequencing and documentation. Connecting
+          these early makes projects more resilient.
+        </p>
+      </div>
+
+      <div class="mt-10 grid gap-10 lg:grid-cols-[1fr_1fr]">
+        <PlaceholderFrame label="Robust & secure image coming soon" class="border-white/10" />
+        <div class="grid gap-6 sm:grid-cols-1">
+          <div>
+            <h3 class="text-lg text-paper"><a href={localizedPath("services", lang, "steel-construction")} class="hover:text-signal">Steel Construction & Halls</a></h3>
+            <p class="mt-1.5 text-sm text-mist">Industrial, storage, workshop and technical halls, structures, platforms, stages and custom builds.</p>
+          </div>
+          <div>
+            <h3 class="text-lg text-paper">Protective Containers</h3>
+            <p class="mt-1.5 text-sm text-mist">Hardened or robust accommodation, work and technical modules for sensitive environments.</p>
+          </div>
+          <div>
+            <h3 class="text-lg text-paper"><a href={localizedPath("services", lang, "defense-infrastructure")} class="hover:text-signal">Defense Infrastructure</a></h3>
+            <p class="mt-1.5 text-sm text-mist">Modular accommodation, logistics, technical, storage and protected areas with discreet project coordination.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-(--container-wide) px-6 py-16 lg:py-20">
+    <p class="icon-topline">How we work</p>
+    <h2 class="mt-2 max-w-2xl text-3xl sm:text-4xl">A clear process reduces friction in the project</h2>
+    <p class="mt-4 max-w-2xl text-steel">
+      The difference isn't just in the product — it's in how the project is run. Use, site,
+      technical services, documentation and installation are brought together early.
+    </p>
+    <div class="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+      {process.map((p) => (
+        <div>
+          <p class="text-sm font-bold text-signal">{p.n}</p>
+          <h3 class="mt-1 text-lg text-ink">{p.title}</h3>
+          <p class="mt-1.5 text-sm text-steel">{p.text}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="border-t border-line bg-mist">
+    <div class="mx-auto max-w-(--container-wide) px-6 py-16 text-center lg:py-20">
+      <p class="icon-topline">Next step</p>
+      <h2 class="mx-auto mt-2 max-w-2xl text-3xl sm:text-4xl">Planning a site, a building, or a fast space solution?</h2>
+      <p class="mx-auto mt-4 max-w-xl text-steel">
+        Together we'll work out whether container construction, modular building, steel construction, or a combined approach fits best.
+      </p>
+      <a href={localizedPath("contact", lang)} class="btn-primary mt-8 inline-block">Start an enquiry</a>
+    </div>
+  </section>
+</Layout>

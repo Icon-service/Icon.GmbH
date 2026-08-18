@@ -1,0 +1,172 @@
+---
+import Layout from "../layouts/Layout.astro";
+import PlaceholderFrame from "../components/PlaceholderFrame.astro";
+import { leistungen } from "../data/leistungen";
+import { localizedPath } from "../i18n/utils";
+
+const lang = "de" as const;
+
+const proof = [
+  { title: "Planung", text: "Grundrisse, technische Daten, Statik, Details und Dokumentation" },
+  { title: "Umsetzung", text: "Containerbau, Modulbau, Stahlbau, Transport und Montage" },
+  { title: "Projektfähigkeit", text: "Industrie, Kommunen, Bildung, Unterkünfte und Sicherheitsbereiche" },
+];
+
+const process = [
+  { n: "01", title: "Bedarf klären", text: "Nutzung, Personenanzahl, Zeitraum, Standort, Schutzbedarf und Schnittstellen erfassen." },
+  { n: "02", title: "Lösung planen", text: "Grundriss, System, Ausbau, Technik, Statik, Fundament und Logistik abstimmen." },
+  { n: "03", title: "Umsetzung vorbereiten", text: "Fertigung, Beschaffung, technische Unterlagen, Transport und Montageablauf koordinieren." },
+  { n: "04", title: "Übergeben", text: "Montage, Baubegleitung, Dokumentation, Abnahme und Erweiterbarkeit sauber abschließen." },
+];
+---
+
+<Layout
+  title="Modulare Gebäude und robuste Infrastruktur aus einer Hand"
+  description="ICON plant, liefert und koordiniert Containerlösungen, modulare Gebäude, Stahlbau- und Hallenprojekte sowie sicherheitsrelevante Infrastruktur."
+  altPath="/en"
+>
+  <section class="border-b border-line">
+    <div class="mx-auto grid max-w-(--container-wide) gap-10 px-6 py-16 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:py-24">
+      <div>
+        <p class="icon-topline">{"ICON GmbH | Containerbau, Modulbau, Stahlbau & Infrastruktur"}</p>
+        <h1 class="mt-4 text-[clamp(2.35rem,6vw,4.2rem)]">Modulare Gebäude und robuste Infrastruktur aus einer Hand</h1>
+        <p class="mt-5 max-w-xl text-lg text-steel">
+          ICON plant, liefert und koordiniert Containerlösungen, modulare Gebäude, Stahlbau- und
+          Hallenprojekte sowie sicherheitsrelevante Infrastruktur. Für Standorte, die schnell,
+          belastbar und sauber dokumentiert umgesetzt werden müssen.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-4">
+          <a href={localizedPath("contact", lang)} class="btn-primary">Projekt anfragen</a>
+          <a href={localizedPath("services", lang)} class="btn-outline text-ink">Leistungen ansehen</a>
+        </div>
+      </div>
+      <PlaceholderFrame label="Hero-Bild folgt" />
+    </div>
+
+    <div class="border-t border-line">
+      <div class="mx-auto grid max-w-(--container-wide) gap-8 px-6 py-10 sm:grid-cols-3">
+        {proof.map((p) => (
+          <div>
+            <h3 class="text-lg text-ink">{p.title}</h3>
+            <p class="mt-1.5 text-sm text-steel">{p.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-(--container-wide) px-6 py-16 lg:py-20">
+    <p class="icon-topline">Was wir bauen</p>
+    <h2 class="mt-2 max-w-2xl text-3xl sm:text-4xl">Leistungsbereiche, die einzeln funktionieren und zusammen stark werden</h2>
+    <div class="mt-5 max-w-2xl space-y-3 text-steel">
+      <p>Viele Projekte passen nicht sauber in nur eine Schublade. Ein Standort braucht Container, ein Modulgebäude, Stahlunterkonstruktionen, Technik, Sanitär, Schutz oder eine schnelle Interimslösung.</p>
+      <p>ICON verbindet diese Bereiche dort, wo es für das Projekt sinnvoll ist: mit klarer Planung, passenden Systemen und einer Umsetzung, die auf Montage, Betrieb und spätere Erweiterung vorbereitet ist.</p>
+    </div>
+
+    <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {leistungen.map((l, i) => (
+        <div class="rounded border border-line p-5">
+          <PlaceholderFrame label={`${l.name[lang]} Bild folgt`} class="mb-4" />
+          <p class="text-sm font-bold text-steel">{String(i + 1).padStart(2, "0")}</p>
+          <h3 class="mt-1 text-xl text-ink">{l.name[lang]}</h3>
+          <p class="mt-2 text-sm text-steel">{l.homeCardText[lang]}</p>
+          <a href={localizedPath("services", lang, l.slugDe)} class="mt-3 inline-block text-sm font-bold text-signal hover:text-signal-dark">
+            Mehr erfahren →
+          </a>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="border-t border-line bg-mist">
+    <div class="mx-auto grid max-w-(--container-wide) gap-10 px-6 py-16 lg:grid-cols-[1fr_1.1fr] lg:items-center lg:py-20">
+      <PlaceholderFrame label="Container & Modulbau Bild folgt" />
+      <div>
+        <p class="icon-topline">Container & Modulbau</p>
+        <h2 class="mt-2 text-3xl sm:text-4xl">Vom einzelnen Raum bis zum ganzen Gebäude</h2>
+        <p class="mt-4 text-steel">
+          Containerbau eignet sich für schnelle, robuste und klar kalkulierbare Raumlösungen.
+          Modulbau erweitert diesen Ansatz zu vollwertigen Gebäuden mit Erschließung,
+          Raumprogramm, Fassaden, Haustechnik und Betreiberanforderungen.
+        </p>
+        <div class="mt-6 grid gap-6 sm:grid-cols-2">
+          <div>
+            <h3 class="text-lg text-ink">Containerbau</h3>
+            <p class="mt-1.5 text-sm text-steel">Produktnah, schnell, flexibel, ideal für Büro, Sanitär, Unterkunft, Technik, Lager und Sonderbau.</p>
+          </div>
+          <div>
+            <h3 class="text-lg text-ink">Modulbau</h3>
+            <p class="mt-1.5 text-sm text-steel">Gebäudeorientiert, planungsintensiver, geeignet für Schulen, Kitas, Verwaltung, Hochschulen und Interim-Flächen.</p>
+          </div>
+        </div>
+        <div class="mt-6 flex flex-wrap gap-4">
+          <a href={localizedPath("services", lang, "containerbau")} class="btn-primary">Containerbau</a>
+          <a href={localizedPath("services", lang, "modulbau")} class="btn-outline text-ink">Modulbau</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-ink text-paper">
+    <div class="mx-auto max-w-(--container-wide) px-6 py-16 lg:py-20">
+      <div class="flex flex-wrap items-start justify-between gap-6">
+        <div>
+          <p class="icon-topline">Robust & sicher</p>
+          <h2 class="mt-2 max-w-xl text-3xl sm:text-4xl text-paper">Stahlbau und sicherheitsrelevante Infrastruktur mitdenken</h2>
+        </div>
+        <p class="max-w-md text-mist">
+          Bei vielen Standorten geht es nicht nur um Räume, sondern um Tragwerke, Fundamente,
+          Technik, Schutz, Montageabläufe und Dokumentation. Diese Schnittstellen früh zu
+          verbinden, macht Projekte belastbarer.
+        </p>
+      </div>
+
+      <div class="mt-10 grid gap-10 lg:grid-cols-[1fr_1fr]">
+        <PlaceholderFrame label="Robust & sicher Bild folgt" class="border-white/10" />
+        <div class="grid gap-6 sm:grid-cols-1">
+          <div>
+            <h3 class="text-lg text-paper"><a href={localizedPath("services", lang, "stahlbau-hallenbau")} class="hover:text-signal">Stahlbau & Hallenbau</a></h3>
+            <p class="mt-1.5 text-sm text-mist">Industrie-, Lager-, Werkstatt- und Technikhalle, Tragwerke, Podeste, Bühnen und Sonderkonstruktionen.</p>
+          </div>
+          <div>
+            <h3 class="text-lg text-paper">Schutzcontainer</h3>
+            <p class="mt-1.5 text-sm text-mist">Gehärtete oder robuste Unterkunfts-, Arbeits- und Technikmodule für sensible Einsatzumgebungen.</p>
+          </div>
+          <div>
+            <h3 class="text-lg text-paper"><a href={localizedPath("services", lang, "militaerische-infrastruktur")} class="hover:text-signal">Militärische Infrastruktur</a></h3>
+            <p class="mt-1.5 text-sm text-mist">Modulare Unterkünfte, Versorgung, Technik, Lager, Schutzbereiche und diskrete Projektkoordination.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-(--container-wide) px-6 py-16 lg:py-20">
+    <p class="icon-topline">Wie wir arbeiten</p>
+    <h2 class="mt-2 max-w-2xl text-3xl sm:text-4xl">Ein klarer Ablauf reduziert Reibung im Projekt</h2>
+    <p class="mt-4 max-w-2xl text-steel">
+      Der Unterschied entsteht nicht nur im Produkt, sondern in der Projektführung. Nutzung,
+      Standort, Technik, Dokumente und Montage werden früh zusammengeführt.
+    </p>
+    <div class="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+      {process.map((p) => (
+        <div>
+          <p class="text-sm font-bold text-signal">{p.n}</p>
+          <h3 class="mt-1 text-lg text-ink">{p.title}</h3>
+          <p class="mt-1.5 text-sm text-steel">{p.text}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="border-t border-line bg-mist">
+    <div class="mx-auto max-w-(--container-wide) px-6 py-16 text-center lg:py-20">
+      <p class="icon-topline">Nächster Schritt</p>
+      <h2 class="mx-auto mt-2 max-w-2xl text-3xl sm:text-4xl">Sie planen einen Standort, ein Gebäude oder eine schnelle Raumlösung?</h2>
+      <p class="mx-auto mt-4 max-w-xl text-steel">
+        Wir klären gemeinsam, ob Containerbau, Modulbau, Stahlbau oder eine kombinierte Lösung am besten passt.
+      </p>
+      <a href={localizedPath("contact", lang)} class="btn-primary mt-8 inline-block">Anfrage starten</a>
+    </div>
+  </section>
+</Layout>
