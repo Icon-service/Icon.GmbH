@@ -1,5 +1,5 @@
 ---
-import { getLangFromUrl, useTranslations } from "../i18n/utils";
+import { getLangFromUrl, useTranslations, localizedPath } from "../i18n/utils";
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
@@ -24,8 +24,8 @@ const year = new Date().getFullYear();
     <div class="mt-10 flex flex-col gap-3 border-t border-white/10 pt-6 text-xs text-mist/70 sm:flex-row sm:items-center sm:justify-between">
       <p>© {year} ICON GmbH — {t("footer.rights")}</p>
       <div class="flex gap-6">
-        <a href="#" class="hover:text-signal">{t("footer.legal")}</a>
-        <a href="#" class="hover:text-signal">{t("footer.privacy")}</a>
+        <a href={localizedPath("legal", lang)} class="hover:text-signal">{t("footer.legal")}</a>
+        <a href={localizedPath("privacy", lang)} class="hover:text-signal">{t("footer.privacy")}</a>
       </div>
     </div>
   </div>

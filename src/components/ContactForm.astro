@@ -1,0 +1,82 @@
+---
+import { useTranslations, type Lang } from "../i18n/utils";
+
+type Props = { lang: Lang };
+const { lang } = Astro.props as Props;
+const t = useTranslations(lang);
+
+// TODO: replace with the real Formspree form ID before launch.
+// Sign up at https://formspree.io (free tier is enough), create a form,
+// and swap "YOUR_FORM_ID" below for the ID it gives you.
+const FORMSPREE_ID = "YOUR_FORM_ID";
+const action = `https://formspree.io/f/${FORMSPREE_ID}`;
+
+const status = {
+  sending: lang === "de" ? "Wird gesendet …" : "Sending …",
+  success: lang === "de" ? "Danke — Ihre Anfrage ist angekommen. Wir melden uns in Kürze." : "Thanks — your enquiry has been sent. We'll be in touch shortly.",
+  error: lang === "de" ? "Das hat leider nicht geklappt. Bitte versuchen Sie es erneut oder schreiben Sie uns direkt an info@icon.gmbh." : "Something went wrong. Please try again or email us directly at info@icon.gmbh.",
+};
+---
+
+<form id="contact-form" class="grid gap-5 sm:grid-cols-2" method="post" action={action}>
+  <label class="flex flex-col gap-1.5 sm:col-span-1">
+    <span class="text-xs font-bold uppercase tracking-wider text-steel">{t("contact.form.name")}</span>
+    <input type="text" name="name" required class="rounded border border-line bg-paper px-3 py-2.5 text-sm text-ink focus:border-signal focus:outline-none" />
+  </label>
+  <label class="flex flex-col gap-1.5 sm:col-span-1">
+    <span class="text-xs font-bold uppercase tracking-wider text-steel">{t("contact.form.company")}</span>
+    <input type="text" name="company" class="rounded border border-line bg-paper px-3 py-2.5 text-sm text-ink focus:border-signal focus:outline-none" />
+  </label>
+  <label class="flex flex-col gap-1.5 sm:col-span-1">
+    <span class="text-xs font-bold uppercase tracking-wider text-steel">{t("contact.form.email")}</span>
+    <input type="email" name="email" required class="rounded border border-line bg-paper px-3 py-2.5 text-sm text-ink focus:border-signal focus:outline-none" />
+  </label>
+  <label class="flex flex-col gap-1.5 sm:col-span-1">
+    <span class="text-xs font-bold uppercase tracking-wider text-steel">{t("contact.form.phone")}</span>
+    <input type="tel" name="phone" class="rounded border border-line bg-paper px-3 py-2.5 text-sm text-ink focus:border-signal focus:outline-none" />
+  </label>
+  <label class="flex flex-col gap-1.5 sm:col-span-2">
+    <span class="text-xs font-bold uppercase tracking-wider text-steel">{t("contact.form.message")}</span>
+    <textarea name="message" rows="5" required class="rounded border border-line bg-paper px-3 py-2.5 text-sm text-ink focus:border-signal focus:outline-none"></textarea>
+  </label>
+
+  <input type="hidden" name="_subject" value={lang === "de" ? "Neue Anfrage über icon-gmbh.de" : "New enquiry via icon-gmbh.de"} />
+
+  <button type="submit" class="btn-primary sm:col-span-2 mt-2 w-fit">
+    {t("contact.form.submit")}
+  </button>
+
+  <p class="form-status sm:col-span-2 hidden text-sm" role="status"></p>
+</form>
+
+<script define:vars={{ sending: status.sending, success: status.success, error: status.error }}>
+  const form = document.getElementById("contact-form");
+  const statusEl = form?.querySelector(".form-status");
+
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (!statusEl) return;
+
+    statusEl.classList.remove("hidden", "text-signal", "text-steel");
+    statusEl.classList.add("text-steel");
+    statusEl.textContent = sending;
+
+    try {
+      const response = await fetch(form.action, {
+        method: "POST",
+        body: new FormData(form),
+        headers: { Accept: "application/json" },
+      });
+      if (response.ok) {
+        statusEl.textContent = success;
+        form.reset();
+      } else {
+        statusEl.classList.add("text-signal");
+        statusEl.textContent = error;
+      }
+    } catch {
+      statusEl.classList.add("text-signal");
+      statusEl.textContent = error;
+    }
+  });
+</script>

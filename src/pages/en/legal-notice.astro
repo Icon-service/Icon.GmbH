@@ -1,0 +1,83 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { useTranslations } from "../../i18n/utils";
+
+const lang = "en" as const;
+const t = useTranslations(lang);
+---
+
+<Layout title={t("footer.legal")} description="Legal notice for ICON GmbH." altPath="/impressum">
+  <section class="border-b border-line">
+    <div class="mx-auto max-w-(--container-wide) px-6 py-16">
+      <h1 class="text-4xl sm:text-5xl">{t("footer.legal")}</h1>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-(--container-wide) px-6 py-16">
+    <div class="mb-8 rounded border border-signal bg-mist p-5 text-sm text-ink">
+      <strong>Note for ICON GmbH:</strong> This page is a placeholder scaffold
+      and <strong>not ready to publish</strong>. Under German law (§ 5 TMG),
+      the registered address, managing directors, commercial register details
+      and VAT ID are legally required — this information is not yet available
+      to us and has deliberately not been invented. Please replace the
+      bracketed placeholders with the real company details before this page
+      goes live. The German <a href="/impressum" class="font-semibold text-signal hover:text-signal-dark">Impressum</a> is the legally binding version.
+    </div>
+
+    <div class="max-w-2xl space-y-8 text-steel">
+      <div>
+        <h2 class="text-xl text-ink">Information pursuant to § 5 TMG</h2>
+        <p class="mt-2">
+          ICON GmbH<br />
+          [Street and number]<br />
+          [Postal code and city]<br />
+          Germany
+        </p>
+      </div>
+
+      <div>
+        <h2 class="text-xl text-ink">Represented by</h2>
+        <p class="mt-2">[Name of managing director(s)]</p>
+      </div>
+
+      <div>
+        <h2 class="text-xl text-ink">Contact</h2>
+        <p class="mt-2">
+          Phone: [Phone number]<br />
+          Email: <a href="mailto:info@icon.gmbh" class="font-semibold text-signal hover:text-signal-dark">info@icon.gmbh</a>
+        </p>
+      </div>
+
+      <div>
+        <h2 class="text-xl text-ink">Commercial register</h2>
+        <p class="mt-2">
+          Registered with the commercial register.<br />
+          Register court: [Register court]<br />
+          Register number: [HRB number]
+        </p>
+      </div>
+
+      <div>
+        <h2 class="text-xl text-ink">VAT ID</h2>
+        <p class="mt-2">
+          VAT identification number per § 27 a of the German VAT Act:<br />
+          [VAT ID]
+        </p>
+      </div>
+
+      <div>
+        <h2 class="text-xl text-ink">EU dispute resolution</h2>
+        <p class="mt-2">
+          The European Commission provides a platform for online dispute
+          resolution (OS):
+          <a href="https://ec.europa.eu/consumers/odr/" class="font-semibold text-signal hover:text-signal-dark" target="_blank" rel="noopener">
+            https://ec.europa.eu/consumers/odr/
+          </a>.
+          Our email address is listed above. We are not obliged or willing to
+          participate in dispute resolution proceedings before a consumer
+          arbitration board.
+        </p>
+      </div>
+    </div>
+  </section>
+</Layout>

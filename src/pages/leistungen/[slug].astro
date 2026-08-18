@@ -1,8 +1,10 @@
 ---
+import { Image } from "astro:assets";
 import Layout from "../../layouts/Layout.astro";
 import BlockRenderer from "../../components/BlockRenderer.astro";
 import { leistungen } from "../../data/leistungen";
 import { useTranslations, localizedPath } from "../../i18n/utils";
+import { getImage } from "../../lib/images";
 
 export function getStaticPaths() {
   return leistungen.map((l) => ({
@@ -29,6 +31,15 @@ const { leistung } = Astro.props;
       <h1 class="mt-3 text-4xl sm:text-5xl">{leistung.name[lang]}</h1>
       <p class="mt-4 max-w-2xl text-lg text-steel">{leistung.heroLead[lang]}</p>
     </div>
+    {leistung.heroImage && (
+      <Image
+        src={getImage(leistung.heroImage)}
+        alt={leistung.name[lang]}
+        class="mx-auto max-h-[28rem] w-full max-w-(--container-wide) object-cover px-6"
+        widths={[640, 1024, 1600]}
+        sizes="(min-width: 1360px) 1360px, 100vw"
+      />
+    )}
   </section>
 
   <section class="mx-auto max-w-(--container-wide) px-6 py-16">
@@ -36,6 +47,26 @@ const { leistung } = Astro.props;
       <BlockRenderer blocks={leistung.blocksDe} />
     ) : (
       <p class="max-w-2xl text-steel">Weitere Details zu diesem Leistungsbereich folgen in Kürze.</p>
+    )}
+
+    {leistung.gallery && (
+      <div class="mt-14">
+        <h2 class="text-2xl sm:text-3xl">Bürocontainer im Detail</h2>
+        <div class="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {leistung.gallery.map((g) => (
+            <figure>
+              <Image
+                src={getImage(g.file)}
+                alt={g.caption[lang]}
+                class="aspect-4/3 w-full rounded object-cover"
+                widths={[320, 480]}
+                sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+              />
+              <figcaption class="mt-2 text-xs text-steel">{g.caption[lang]}</figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
     )}
 
     <div class="mt-14 rounded border border-line bg-mist p-6 sm:p-8">

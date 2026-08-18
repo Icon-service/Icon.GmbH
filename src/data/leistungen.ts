@@ -18,6 +18,10 @@ export type Leistung = {
   homeCardText: { de: string; en: string };
   heroLead: { de: string; en: string };
   blocksDe: Block[];
+  /** filenames in src/assets/images, resolved via src/lib/images.ts */
+  heroImage?: string;
+  cardImage?: string;
+  gallery?: { file: string; caption: { de: string; en: string } }[];
   ctaHref?: string;
   ctaLabel?: { de: string; en: string };
 };
@@ -27,6 +31,14 @@ export const leistungen: Leistung[] = [
     id: "containerbau",
     slugDe: "containerbau",
     slugEn: "container-construction",
+    heroImage: "containerbau-hero.png",
+    cardImage: "containerbau-icon-hero.png",
+    gallery: [
+      { file: "buerocontainer-aussenansicht-fenster.png", caption: { de: "Bürocontainer, Außenansicht", en: "Office container, exterior" } },
+      { file: "buerocontainer-20-fuss-innenansicht.png", caption: { de: "Bürocontainer 20', Innenansicht", en: "20' office container, interior" } },
+      { file: "buerocontainer-aussenansicht-tuer.png", caption: { de: "Bürocontainer, Eingangsseite", en: "Office container, entrance side" } },
+      { file: "buerocontainer-rahmen-detail.png", caption: { de: "Rahmenkonstruktion, Detail", en: "Frame construction, detail" } },
+    ],
     name: { de: "Containerbau", en: "Container Construction" },
     homeCardText: {
       de: "Büro-, Wohn-, Sanitär-, Technik-, Lager-, Baustellen- und Schutzcontainer als Einzelcontainer, Anlage oder Sonderbau.",
@@ -87,6 +99,7 @@ export const leistungen: Leistung[] = [
     id: "modulbau",
     slugDe: "modulbau",
     slugEn: "modular-construction",
+    heroImage: "modulbau-hero-building.png",
     name: { de: "Modulbau", en: "Modular Construction" },
     homeCardText: {
       de: "Schulen, Kitas, Hochschulen, Bürogebäude, Unterkünfte und Interim-Gebäude mit Grundriss, Technik und Ausbaukonzept.",
@@ -135,6 +148,7 @@ export const leistungen: Leistung[] = [
     id: "stahlbau-hallen",
     slugDe: "stahlbau-hallenbau",
     slugEn: "steel-construction",
+    heroImage: "stahlbau-hallen-hero.jpeg",
     name: { de: "Stahlbau & Hallen", en: "Steel Construction & Halls" },
     homeCardText: {
       de: "Tragwerke, Hallen, Bühnen, Unterkonstruktionen und Sonderstahlbau für robuste Infrastruktur.",
@@ -205,6 +219,7 @@ export const leistungen: Leistung[] = [
     id: "militaerische-infrastruktur",
     slugDe: "militaerische-infrastruktur",
     slugEn: "defense-infrastructure",
+    heroImage: "militaerische-infrastruktur-hero.png",
     name: { de: "Militärische Infrastruktur", en: "Defense Infrastructure" },
     homeCardText: {
       de: "Gehärtete Unterkünfte, Schutz- und Technikcontainer, Versorgung, Montage und vertrauliche Projektabwicklung.",
@@ -262,6 +277,7 @@ export const leistungen: Leistung[] = [
     id: "interim-gebaeude",
     slugDe: "interim-gebaeude",
     slugEn: "interim-buildings",
+    heroImage: "leistungen-hero-feuerwehr-interim.jpg",
     name: { de: "Interim-Gebäude", en: "Interim Buildings" },
     homeCardText: {
       de: "Ersatzflächen während Umbau, Sanierung, Kapazitätserweiterung oder laufendem Betrieb.",
