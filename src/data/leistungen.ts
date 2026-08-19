@@ -21,7 +21,6 @@ export type Leistung = {
   /** filenames in src/assets/images, resolved via src/lib/images.ts */
   heroImage?: string;
   cardImage?: string;
-  gallery?: { file: string; caption: { de: string; en: string } }[];
   ctaHref?: string;
   ctaLabel?: { de: string; en: string };
 };
@@ -33,19 +32,13 @@ export const leistungen: Leistung[] = [
     slugEn: "container-construction",
     heroImage: "containerbau-hero.png",
     cardImage: "containerbau-icon-hero.png",
-    gallery: [
-      { file: "buerocontainer-aussenansicht-fenster.png", caption: { de: "Bürocontainer, Außenansicht", en: "Office container, exterior" } },
-      { file: "buerocontainer-20-fuss-innenansicht.png", caption: { de: "Bürocontainer 20', Innenansicht", en: "20' office container, interior" } },
-      { file: "buerocontainer-aussenansicht-tuer.png", caption: { de: "Bürocontainer, Eingangsseite", en: "Office container, entrance side" } },
-      { file: "buerocontainer-rahmen-detail.png", caption: { de: "Rahmenkonstruktion, Detail", en: "Frame construction, detail" } },
-    ],
     name: { de: "Containerbau", en: "Container Construction" },
     homeCardText: {
       de: "Büro-, Wohn-, Sanitär-, Technik-, Lager-, Baustellen- und Schutzcontainer als Einzelcontainer, Anlage oder Sonderbau.",
       en: "Office, residential, sanitary, technical, storage, site and protective containers — as single units, complexes or custom builds.",
     },
     heroLead: {
-      de: "ICON entwickelt und realisiert Containerlösungen für Industrie, Kommunen, Baustellen, Unterbringung und technische Infrastruktur. Die Seite ist bewusst nach Sortiment, Modellreihe, Nutzungsart und technischer Planung aufgebaut.",
+      de: "ICON entwickelt und realisiert Containerlösungen für Industrie, Kommunen, Baustellen, Unterbringung und technische Infrastruktur. Die Seite ist bewusst nach Sortiment, Nutzungsart und technischer Planung aufgebaut.",
       en: "ICON develops and delivers container solutions for industry, municipalities, construction sites, accommodation and technical infrastructure.",
     },
     blocksDe: [
@@ -79,21 +72,9 @@ export const leistungen: Leistung[] = [
           },
         ],
       },
-      {
-        type: "list",
-        heading: "Containerlösungen nach Modellreihe",
-        items: [
-          "ICON Eco: wirtschaftliches Basismodul für einfache und kurzfristige Nutzungen",
-          "ICON Eco Plus: mehr Komfort und Ausstattung für mittelfristige Projekte",
-          "ICON Standard: flexible Grundlage für Büro, Unterkunft, Sanitär, Technik und Anlagen",
-          "ICON Comfort: hochwertigere Lösung für Schulen, Verwaltung und lange Nutzung",
-          "ICON Protect: projektbezogene Sonderlösung für erhöhte Sicherheitsanforderungen",
-          "ICON Technik: Technik- und Betriebscontainer für Anlagen und Infrastruktur",
-        ],
-      },
     ],
-    ctaHref: "/container-modelle",
-    ctaLabel: { de: "Container-Modelle ansehen", en: "View container models" },
+    ctaHref: "/sortiment",
+    ctaLabel: { de: "Sortiment ansehen", en: "View products" },
   },
   {
     id: "modulbau",

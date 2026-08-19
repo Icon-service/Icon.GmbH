@@ -1,0 +1,51 @@
+---
+import { Image } from "astro:assets";
+import Layout from "../../../layouts/Layout.astro";
+import PlaceholderFrame from "../../../components/PlaceholderFrame.astro";
+import { sortiment } from "../../../data/sortiment";
+import { useTranslations, localizedPath } from "../../../i18n/utils";
+import { getImage } from "../../../lib/images";
+
+const lang = "en" as const;
+const t = useTranslations(lang);
+
+const cardImage: Record<string, string> = {
+  buerocontainer: "buerocontainer-aussenansicht-fenster.png",
+};
+---
+
+<Layout
+  title={t("sortiment.overview.title")}
+  description="Office containers, residential and accommodation containers, sanitary containers, school and education buildings, site containers, break and welfare rooms — ICON GmbH's product range."
+  altPath="/sortiment"
+>
+  <section class="border-b border-line">
+    <div class="mx-auto max-w-(--container-wide) px-6 py-16">
+      <p class="icon-topline">{t("hero.eyebrow")}</p>
+      <h1 class="mt-3 text-4xl sm:text-5xl">{t("sortiment.overview.title")}</h1>
+      <p class="mt-4 max-w-xl text-lg text-steel">{t("sortiment.overview.lead")}</p>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-(--container-wide) px-6 py-16">
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {sortiment.map((p) => (
+        <a href={localizedPath("sortiment", lang, p.slugEn)} class="card is-interactive group block p-5">
+          {cardImage[p.id] ? (
+            <Image
+              src={getImage(cardImage[p.id])}
+              alt={p.name[lang]}
+              class="mb-4 aspect-4/3 w-full rounded object-cover"
+              widths={[320, 480]}
+              sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+            />
+          ) : (
+            <PlaceholderFrame label={`${p.name[lang]} image coming soon`} class="mb-4" />
+          )}
+          <h2 class="text-xl text-ink group-hover:text-signal">{p.name[lang]}</h2>
+          <p class="mt-2 text-sm text-steel">{p.excerpt[lang]}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+</Layout>

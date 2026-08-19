@@ -1,0 +1,118 @@
+---
+import { Image } from "astro:assets";
+import Layout from "../../layouts/Layout.astro";
+import BlockRenderer from "../../components/BlockRenderer.astro";
+import PlaceholderFrame from "../../components/PlaceholderFrame.astro";
+import { sortiment } from "../../data/sortiment";
+import { useTranslations, localizedPath } from "../../i18n/utils";
+import { getImage } from "../../lib/images";
+
+export function getStaticPaths() {
+  return sortiment.map((p) => ({
+    params: { slug: p.slugDe },
+    props: { product: p },
+  }));
+}
+
+const lang = "de" as const;
+const t = useTranslations(lang);
+const { product } = Astro.props;
+
+// Only Bürocontainer has real photography recovered from the old site so far.
+const gallery =
+  product.id === "buerocontainer"
+    ? [
+        { file: "buerocontainer-aussenansicht-fenster.png", caption: "Bürocontainer, Außenansicht" },
+        { file: "buerocontainer-20-fuss-innenansicht.png", caption: "Bürocontainer 20', Innenansicht" },
+        { file: "buerocontainer-aussenansicht-tuer.png", caption: "Bürocontainer, Eingangsseite" },
+        { file: "buerocontainer-rahmen-detail.png", caption: "Rahmenkonstruktion, Detail" },
+      ]
+    : [];
+
+const specRows = [
+  t("sortiment.specs.dimensions"),
+  t("sortiment.specs.layout"),
+  t("sortiment.specs.technical"),
+  t("sortiment.specs.fitout"),
+  t("sortiment.specs.downloads"),
+];
+---
+
+<Layout
+  title={product.name[lang]}
+  description={product.heroLead[lang]}
+  altPath={`/en/sortiment/${product.slugEn}`}
+>
+  <section class="border-b border-line">
+    <div class="mx-auto max-w-(--container-wide) px-6 py-16">
+      <a href={localizedPath("sortiment", lang)} class="text-sm font-semibold text-steel hover:text-signal">
+        ← {t("sortiment.overview.title")}
+      </a>
+      <p class="icon-topline mt-4">{t("sortiment.overview.title")}</p>
+      <h1 class="mt-2 text-4xl sm:text-5xl">{product.name[lang]}</h1>
+      <p class="mt-4 max-w-2xl text-lg text-steel">{product.heroLead[lang]}</p>
+      {product.introExtra && <p class="mt-3 max-w-2xl text-steel">{product.introExtra}</p>}
+    </div>
+
+    {gallery.length > 0 ? (
+      <div class="mx-auto grid max-w-(--container-wide) grid-cols-2 gap-3 px-6 pb-2 lg:grid-cols-4">
+        {gallery.map((g) => (
+          <figure>
+            <Image
+              src={getImage(g.file)}
+              alt={g.caption}
+              class="aspect-4/3 w-full rounded object-cover"
+              widths={[320, 480]}
+              sizes="(min-width: 1024px) 25vw, 50vw"
+            />
+            <figcaption class="mt-1.5 text-xs text-steel">{g.caption}</figcaption>
+          </figure>
+        ))}
+      </div>
+    ) : (
+      <div class="mx-auto max-w-(--container-wide) px-6 pb-2">
+        <PlaceholderFrame label={`${product.name[lang]} Bild folgt`} />
+      </div>
+    )}
+  </section>
+
+  <section class="mx-auto max-w-(--container-wide) px-6 py-16">
+    <h2 class="text-2xl sm:text-3xl">{t("sortiment.variants.title")}</h2>
+    <div class="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {product.variants.map((v) => (
+        <div class="card p-5">
+          <p class="icon-topline">{v.code}</p>
+          <h3 class="mt-1.5 text-lg text-ink">{v.title}</h3>
+          <p class="mt-2 text-sm text-steel">{v.text}</p>
+          <dl class="mt-4 space-y-1.5 border-t border-line pt-3">
+            <div class="flex justify-between gap-4 text-[13px]">
+              <dt class="text-steel">{t("sortiment.variant.use")}</dt>
+              <dd class="text-right text-ink">{v.einsatz}</dd>
+            </div>
+            <div class="flex justify-between gap-4 text-[13px]">
+              <dt class="text-steel">{t("sortiment.variant.planning")}</dt>
+              <dd class="text-right text-ink">{v.planung}</dd>
+            </div>
+          </dl>
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-14">
+      <BlockRenderer blocks={product.detailBlocksDe} />
+    </div>
+
+    <div class="card mt-14 bg-mist p-6 sm:p-8">
+      <h2 class="text-xl text-ink">{t("sortiment.specs.title")}</h2>
+      <p class="mt-3 text-steel">{t("sortiment.specs.lead")}</p>
+      <ul class="mt-4 space-y-2">
+        {specRows.map((row) => (
+          <li class="border-l-2 border-line pl-3 text-sm text-steel">{row}</li>
+        ))}
+      </ul>
+      <a href={localizedPath("contact", lang)} class="btn-primary mt-6 inline-block">
+        {t("nav.cta")}
+      </a>
+    </div>
+  </section>
+</Layout>

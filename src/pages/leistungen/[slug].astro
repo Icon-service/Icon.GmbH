@@ -49,26 +49,6 @@ const { leistung } = Astro.props;
       <p class="max-w-2xl text-steel">Weitere Details zu diesem Leistungsbereich folgen in Kürze.</p>
     )}
 
-    {leistung.gallery && (
-      <div class="mt-14">
-        <h2 class="text-2xl sm:text-3xl">Bürocontainer im Detail</h2>
-        <div class="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {leistung.gallery.map((g) => (
-            <figure>
-              <Image
-                src={getImage(g.file)}
-                alt={g.caption[lang]}
-                class="aspect-4/3 w-full rounded object-cover"
-                widths={[320, 480]}
-                sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-              />
-              <figcaption class="mt-2 text-xs text-steel">{g.caption[lang]}</figcaption>
-            </figure>
-          ))}
-        </div>
-      </div>
-    )}
-
     <div class="card mt-14 bg-mist p-6 sm:p-8">
       <p class="text-lg text-ink">
         {leistung.ctaLabel

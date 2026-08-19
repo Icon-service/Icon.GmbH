@@ -16,7 +16,7 @@ export function useTranslations(lang: Lang) {
 export const routes = {
   home: { de: "", en: "" },
   services: { de: "leistungen", en: "services" },
-  models: { de: "container-modelle", en: "container-models" },
+  sortiment: { de: "sortiment", en: "products" },
   references: { de: "referenzen", en: "references" },
   about: { de: "ueber-uns", en: "about" },
   contact: { de: "kontakt", en: "contact" },

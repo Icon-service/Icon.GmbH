@@ -1,0 +1,82 @@
+---
+import { Image } from "astro:assets";
+import Layout from "../../../layouts/Layout.astro";
+import PlaceholderFrame from "../../../components/PlaceholderFrame.astro";
+import { sortiment } from "../../../data/sortiment";
+import { useTranslations, localizedPath } from "../../../i18n/utils";
+import { getImage } from "../../../lib/images";
+
+export function getStaticPaths() {
+  return sortiment.map((p) => ({
+    params: { slug: p.slugEn },
+    props: { product: p },
+  }));
+}
+
+const lang = "en" as const;
+const t = useTranslations(lang);
+const { product } = Astro.props;
+
+const gallery =
+  product.id === "buerocontainer"
+    ? [
+        { file: "buerocontainer-aussenansicht-fenster.png", caption: "Office container, exterior" },
+        { file: "buerocontainer-20-fuss-innenansicht.png", caption: "20' office container, interior" },
+        { file: "buerocontainer-aussenansicht-tuer.png", caption: "Office container, entrance side" },
+        { file: "buerocontainer-rahmen-detail.png", caption: "Frame construction, detail" },
+      ]
+    : [];
+---
+
+<Layout
+  title={product.name[lang]}
+  description={product.heroLead[lang]}
+  altPath={`/sortiment/${product.slugDe}`}
+>
+  <section class="border-b border-line">
+    <div class="mx-auto max-w-(--container-wide) px-6 py-16">
+      <a href={localizedPath("sortiment", lang)} class="text-sm font-semibold text-steel hover:text-signal">
+        ← {t("sortiment.overview.title")}
+      </a>
+      <p class="icon-topline mt-4">{t("sortiment.overview.title")}</p>
+      <h1 class="mt-2 text-4xl sm:text-5xl">{product.name[lang]}</h1>
+      <p class="mt-4 max-w-2xl text-lg text-steel">{product.heroLead[lang]}</p>
+    </div>
+
+    {gallery.length > 0 ? (
+      <div class="mx-auto grid max-w-(--container-wide) grid-cols-2 gap-3 px-6 pb-2 lg:grid-cols-4">
+        {gallery.map((g) => (
+          <figure>
+            <Image
+              src={getImage(g.file)}
+              alt={g.caption}
+              class="aspect-4/3 w-full rounded object-cover"
+              widths={[320, 480]}
+              sizes="(min-width: 1024px) 25vw, 50vw"
+            />
+            <figcaption class="mt-1.5 text-xs text-steel">{g.caption}</figcaption>
+          </figure>
+        ))}
+      </div>
+    ) : (
+      <div class="mx-auto max-w-(--container-wide) px-6 pb-2">
+        <PlaceholderFrame label={`${product.name[lang]} image coming soon`} />
+      </div>
+    )}
+  </section>
+
+  <section class="mx-auto max-w-(--container-wide) px-6 py-16">
+    <p class="max-w-2xl text-steel">
+      A full English version of this page is in progress —
+      <a href={`/sortiment/${product.slugDe}`} class="font-semibold text-signal hover:text-signal-dark">
+        read the complete German page
+      </a>
+      in the meantime, or get in touch directly.
+    </p>
+
+    <div class="card mt-10 bg-mist p-6 sm:p-8">
+      <p class="text-lg text-ink">Interested in this product?</p>
+      <a href={localizedPath("contact", lang)} class="btn-primary mt-4 inline-block">{t("nav.cta")}</a>
+    </div>
+  </section>
+</Layout>
