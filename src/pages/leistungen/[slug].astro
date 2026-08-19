@@ -2,6 +2,7 @@
 import { Image } from "astro:assets";
 import Layout from "../../layouts/Layout.astro";
 import BlockRenderer from "../../components/BlockRenderer.astro";
+import ModulSystemSheet from "../../components/ModulSystemSheet.astro";
 import { leistungen } from "../../data/leistungen";
 import { useTranslations, localizedPath } from "../../i18n/utils";
 import { getImage } from "../../lib/images";
@@ -49,6 +50,15 @@ const { leistung } = Astro.props;
       <p class="max-w-2xl text-steel">Weitere Details zu diesem Leistungsbereich folgen in Kürze.</p>
     )}
 
+    {leistung.modulSystem && (
+      <div class="mt-14">
+        <h2 class="text-2xl sm:text-3xl">Das G-CAP Modulsystem</h2>
+        <div class="mt-6">
+          <ModulSystemSheet system={leistung.modulSystem} />
+        </div>
+      </div>
+    )}
+
     <div class="card mt-14 bg-mist p-6 sm:p-8">
       <p class="text-lg text-ink">
         {leistung.ctaLabel
@@ -59,7 +69,7 @@ const { leistung } = Astro.props;
         <a href={leistung.ctaHref ?? localizedPath("contact", lang)} class="btn-primary">
           {leistung.ctaLabel?.[lang] ?? t("nav.cta")}
         </a>
-        {leistung.ctaHref !== localizedPath("contact", lang) && (
+        {leistung.ctaHref && leistung.ctaHref !== localizedPath("contact", lang) && (
           <a href={localizedPath("contact", lang)} class="btn-outline text-ink">
             {t("nav.cta")}
           </a>

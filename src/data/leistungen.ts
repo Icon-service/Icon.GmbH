@@ -2,6 +2,9 @@
 // the homepage service grid). DE content is the original copy; EN is a short
 // working translation for now — full EN parity is a later pass.
 
+import type { ModulSystem } from "./modulSystem";
+import { MODUL_SYSTEM } from "./modulSystem";
+
 export type Block =
   | { type: "paragraphs"; heading?: string; text: string[] }
   | { type: "list"; heading?: string; items: string[] }
@@ -23,6 +26,7 @@ export type Leistung = {
   cardImage?: string;
   ctaHref?: string;
   ctaLabel?: { de: string; en: string };
+  modulSystem?: ModulSystem;
 };
 
 export const leistungen: Leistung[] = [
@@ -81,6 +85,7 @@ export const leistungen: Leistung[] = [
     slugDe: "modulbau",
     slugEn: "modular-construction",
     heroImage: "modulbau-hero-building.png",
+    modulSystem: MODUL_SYSTEM,
     name: { de: "Modulbau", en: "Modular Construction" },
     homeCardText: {
       de: "Schulen, Kitas, Hochschulen, Bürogebäude, Unterkünfte und Interim-Gebäude mit Grundriss, Technik und Ausbaukonzept.",
