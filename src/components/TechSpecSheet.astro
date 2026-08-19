@@ -57,6 +57,49 @@ const { spec } = Astro.props as Props;
     </div>
   </div>
 
+  <div>
+    <h3 class="text-xl text-ink">Isolierung Wandpaneele — µ-Werte</h3>
+    <p class="mt-1.5 text-sm text-steel">Verfügbare Dämmstärken je nach gewünschtem Wärmedurchgangskoeffizienten (U-Wert), identisch über das gesamte Sortiment.</p>
+    <div class="mt-4 overflow-x-auto rounded border-2 border-signal">
+      <table class="w-full min-w-[420px] border-collapse text-left text-sm">
+        <thead>
+          <tr class="bg-signal text-xs uppercase tracking-wider text-paper">
+            <th class="px-4 py-2.5 font-bold">Material</th>
+            <th class="px-4 py-2.5 font-bold">Isolationsstärke</th>
+            <th class="px-4 py-2.5 font-bold">U-Wert</th>
+          </tr>
+        </thead>
+        <tbody>
+          {spec.insulationTable.map((row, i) => (
+            <tr class={i % 2 === 1 ? "bg-mist" : "bg-paper"}>
+              <td class="px-4 py-2 text-ink">{row.material}</td>
+              <td class="px-4 py-2 text-steel">{row.thickness}</td>
+              <td class="px-4 py-2 font-bold text-ink">{row.uValue}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {spec.extraSections && spec.extraSections.length > 0 && (
+    <div>
+      {spec.extraSections.map((section) => (
+        <div class="card mb-5 bg-mist p-5">
+          <p class="icon-topline">{section.heading}</p>
+          <dl class="mt-3 grid gap-3 sm:grid-cols-2">
+            {section.rows.map((row) => (
+              <div>
+                <dt class="text-xs font-bold uppercase tracking-wide text-steel">{row.label}</dt>
+                <dd class="mt-0.5 text-sm text-ink">{row.value}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      ))}
+    </div>
+  )}
+
   <div class="card bg-ink p-5 text-paper">
     <p class="icon-topline">Tragfähigkeit</p>
     <p class="mt-2 text-sm text-mist">{spec.loadNote}</p>

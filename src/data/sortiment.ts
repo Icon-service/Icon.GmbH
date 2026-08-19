@@ -24,13 +24,136 @@ export type SpecSection = {
   rows: { label: string; value: string }[];
 };
 
+export type InsulationRow = {
+  material: string;
+  thickness: string;
+  uValue: string;
+};
+
 export type TechnicalDescription = {
   /** where the placeholder figures below came from, shown as an on-page note */
   sourceNote: string;
   dimensions: DimensionRow[];
   sections: SpecSection[];
+  /** wall-panel insulation build-up — same options across the whole range */
+  insulationTable: InsulationRow[];
   loadNote: string;
+  /** product-specific extras, e.g. sanitary fittings or approval notes */
+  extraSections?: SpecSection[];
 };
+
+// Same for every product in the range, per ICON: the panel build-up options
+// don't change between Bürocontainer, Sanitärcontainer, etc.
+export const INSULATION_TABLE: InsulationRow[] = [
+  { material: "PUR Polyurethanschaum", thickness: "50 mm (Standard)", uValue: "0,42 W/m²K" },
+  { material: "PUR Polyurethanschaum", thickness: "60 mm", uValue: "0,34 W/m²K" },
+  { material: "PUR Polyurethanschaum", thickness: "80 mm", uValue: "0,25 W/m²K" },
+  { material: "PUR Polyurethanschaum", thickness: "100 mm", uValue: "0,20 W/m²K" },
+  { material: "PUR Polyurethanschaum", thickness: "120 mm", uValue: "0,17 W/m²K" },
+  { material: "PUR Polyurethanschaum", thickness: "150 mm", uValue: "0,14 W/m²K" },
+  { material: "MW Mineralwolle", thickness: "60 mm", uValue: "0,62 W/m²K" },
+  { material: "MW Mineralwolle", thickness: "80 mm", uValue: "0,48 W/m²K" },
+  { material: "MW Mineralwolle", thickness: "100 mm", uValue: "0,39 W/m²K" },
+  { material: "MW Mineralwolle", thickness: "120 mm", uValue: "0,33 W/m²K" },
+  { material: "MW Mineralwolle", thickness: "150 mm", uValue: "0,26 W/m²K" },
+  { material: "MW Mineralwolle", thickness: "200 mm", uValue: "0,20 W/m²K" },
+];
+
+// L×B×H stays the same across the whole range (10'/16'/20'/24'/30'); only
+// the weight moves with fit-out (e.g. sanitary containers carry plumbing).
+function buildDimensions(weights: [string, string, string, string, string]): DimensionRow[] {
+  const sizes: [string, string, string, string][] = [
+    ["10'", "2.991 × 2.438 × 2.791 mm", "2.820 × 2.267 × 2.500 mm", "ca. 6,4 m²"],
+    ["16'", "4.886 × 2.438 × 2.791 mm", "4.715 × 2.267 × 2.500 mm", "ca. 10,7 m²"],
+    ["20'", "6.058 × 2.438 × 2.791 mm", "5.887 × 2.267 × 2.500 mm", "ca. 13,4 m²"],
+    ["24'", "7.335 × 2.438 × 2.791 mm", "7.164 × 2.267 × 2.500 mm", "ca. 16,3 m²"],
+    ["30'", "9.125 × 2.438 × 2.791 mm", "8.954 × 2.267 × 2.500 mm", "ca. 20,3 m²"],
+  ];
+  return sizes.map(([size, outer, inner, area], i) => ({ size, outer, inner, area, weight: weights[i] }));
+}
+
+const STANDARD_LOAD_NOTE =
+  "Windbeständigkeit bis ca. 100 km/h, Dach-Schneelast im Standard ca. 1,5 kN/m² (Verstärkung auf Anfrage). Die zulässige Schneelast am Aufstellort ist vor Bestellung zu prüfen; bei höheren örtlichen Lasten sind zusätzliche Maßnahmen erforderlich.";
+
+const PLACEHOLDER_SOURCE_NOTE =
+  "Vorläufige technische Angaben, orientiert an marktüblichen Standardgrößen. Wird durch die tatsächlichen ICON-Werte ersetzt.";
+
+// Shared construction sections (Dach/Boden/Ecksäulen/Lackierung) repeat almost
+// verbatim across the range — only Wandpaneele/Türen/Fenster/Elektro tend to
+// vary by product. Kept as a function (not a constant) so each product gets
+// its own array instance to extend/override.
+function baseConstructionSections(): SpecSection[] {
+  return [
+    {
+      heading: "Dach",
+      rows: [
+        { label: "Rahmenkonstruktion", value: "Kaltgewalzte Stahlprofile, 3 mm, verschweißt; Containerecken nach ISO-Norm" },
+        { label: "Dachdeckung", value: "Verzinktes, beschichtetes Stahlblech, 0,55 mm, umlaufender Doppelfalz" },
+        { label: "Isolierung", value: "Mineralwolle 100 mm, Brandklasse A1 (nicht brennbar)" },
+        { label: "Wärmedämmung", value: "U-Wert ca. 0,36 W/m²K" },
+        { label: "Farbe innen", value: "RAL 9002 Grauweiß" },
+      ],
+    },
+    {
+      heading: "Boden",
+      rows: [
+        { label: "Rahmenkonstruktion", value: "Kaltgewalzte Stahlprofile, 3 mm, verschweißt" },
+        { label: "Gabelstaplertaschen", value: "Optional, Achsabstand 1.200 mm" },
+        { label: "Unterboden", value: "Verzinktes, beschichtetes Blech, 0,75 mm" },
+        { label: "Fußboden", value: "Zementgebundene Spanplatte, 21 mm, wasserabweisend, formaldehydfrei" },
+        { label: "Bodenbelag", value: "Homogener PVC-Belag, 1,5 mm, Rutschfestigkeitsklasse R9" },
+        { label: "Wärmedämmung", value: "U-Wert ca. 0,34 W/m²K" },
+      ],
+    },
+    {
+      heading: "Wandpaneele",
+      rows: [
+        { label: "Ausführung", value: "Auswechselbare Wandelemente" },
+        { label: "Außen-/Innenverkleidung", value: "Verzinktes, farbbeschichtetes Stahlblech, 0,55 mm" },
+        { label: "Farbe innen/außen", value: "RAL 9002 Grauweiß, weitere RAL-Töne auf Anfrage" },
+        { label: "Isolierung", value: "PUR-Hartschaum 50–150 mm oder Mineralwolle 60–200 mm — siehe Isolierungstabelle unten" },
+      ],
+    },
+    {
+      heading: "Ecksäulen",
+      rows: [
+        { label: "Ausführung", value: "Kaltgewalzte Stahlprofile, 3 mm, mit Boden- und Dachrahmen verschweißt oder verschraubt; Tragfähigkeit ab ca. 1.800 kg/Säule" },
+        { label: "Isolierung", value: "Gepresste Steinwolleplatten gegen Kältebrücken" },
+      ],
+    },
+    {
+      heading: "Lackierung",
+      rows: [
+        { label: "Vorbehandlung", value: "Entfettung und Grundierung der Stahlprofile, galvanische Verzinkung der Dünnbleche" },
+        { label: "Beschichtung", value: "Epoxy-Grundierung mit Vinylacryl-Decklack bzw. PUR-Einschichtlack auf Dünnblech" },
+      ],
+    },
+    {
+      heading: "Türen",
+      rows: [
+        { label: "Konstruktion", value: "Einflügelige Stahltür, lichtes Maß ca. 820 × 2.000 mm, links oder rechts angeschlagen" },
+        { label: "Isolierung", value: "Isolierplatte, ca. 40 mm" },
+      ],
+    },
+    {
+      heading: "Fenster",
+      rows: [
+        { label: "Konstruktion", value: "Kunststofffenster mit Dreh-/Kippbeschlag, ca. 790 × 1.000 mm, Isolierverglasung, Rollladen optional" },
+        { label: "Wärmedämmung", value: "Uw-Wert ca. 1,6 W/m²K" },
+      ],
+    },
+    {
+      heading: "Elektroinstallation",
+      rows: [
+        { label: "Netzanschluss", value: "CEE-Anschluss, 5-polig, 32 A, 400 V, nach VDE-Richtlinien" },
+        { label: "Verteilung", value: "Unterputz mit FI-Schutzschalter und Sicherungsautomaten" },
+        { label: "Beleuchtung", value: "Wannenleuchten, Spiegelrasterleuchte optional" },
+        { label: "Heizung", value: "Elektrokonvektor, ca. 2 kW, mit Thermostat" },
+        { label: "Klima", value: "Optional als Kompakt- oder Split-Klimagerät" },
+      ],
+    },
+  ];
+}
 
 export type SortimentProduct = {
   id: string;
@@ -81,87 +204,11 @@ export const sortiment: SortimentProduct[] = [
     // TODO(ICON): Platzhalterwerte, orientiert an einem Referenz-Datenblatt eines
     // Mitbewerbers (Conzept) — durch echte ICON-Werte ersetzen, sobald verfügbar.
     technicalDescription: {
-      sourceNote:
-        "Vorläufige technische Angaben, orientiert an marktüblichen Bürocontainer-Standardgrößen. Wird durch die tatsächlichen ICON-Werte ersetzt.",
-      dimensions: [
-        { size: "10'", outer: "2.991 × 2.438 × 2.791 mm", inner: "2.820 × 2.267 × 2.500 mm", area: "ca. 6,4 m²", weight: "ca. 1.225 kg" },
-        { size: "16'", outer: "4.886 × 2.438 × 2.791 mm", inner: "4.715 × 2.267 × 2.500 mm", area: "ca. 10,7 m²", weight: "ca. 1.650 kg" },
-        { size: "20'", outer: "6.058 × 2.438 × 2.791 mm", inner: "5.887 × 2.267 × 2.500 mm", area: "ca. 13,4 m²", weight: "ca. 1.850 kg" },
-        { size: "24'", outer: "7.335 × 2.438 × 2.791 mm", inner: "7.164 × 2.267 × 2.500 mm", area: "ca. 16,3 m²", weight: "ca. 2.150 kg" },
-        { size: "30'", outer: "9.125 × 2.438 × 2.791 mm", inner: "8.954 × 2.267 × 2.500 mm", area: "ca. 20,3 m²", weight: "ca. 2.550 kg" },
-      ],
-      sections: [
-        {
-          heading: "Dach",
-          rows: [
-            { label: "Rahmenkonstruktion", value: "Kaltgewalzte Stahlprofile, 3 mm, verschweißt; Containerecken nach ISO-Norm" },
-            { label: "Dachdeckung", value: "Verzinktes, beschichtetes Stahlblech, 0,55 mm, umlaufender Doppelfalz" },
-            { label: "Isolierung", value: "Mineralwolle 100 mm, Brandklasse A1 (nicht brennbar)" },
-            { label: "Wärmedämmung", value: "U-Wert ca. 0,36 W/m²K" },
-            { label: "Farbe innen", value: "RAL 9002 Grauweiß" },
-          ],
-        },
-        {
-          heading: "Boden",
-          rows: [
-            { label: "Rahmenkonstruktion", value: "Kaltgewalzte Stahlprofile, 3 mm, verschweißt" },
-            { label: "Gabelstaplertaschen", value: "Optional, Achsabstand 1.200 mm" },
-            { label: "Unterboden", value: "Verzinktes, beschichtetes Blech, 0,75 mm" },
-            { label: "Fußboden", value: "Zementgebundene Spanplatte, 21 mm, wasserabweisend, formaldehydfrei" },
-            { label: "Bodenbelag", value: "Homogener PVC-Belag, 1,5 mm, Rutschfestigkeitsklasse R9" },
-            { label: "Wärmedämmung", value: "U-Wert ca. 0,34 W/m²K" },
-          ],
-        },
-        {
-          heading: "Wandpaneele",
-          rows: [
-            { label: "Ausführung", value: "Auswechselbare Wandelemente" },
-            { label: "Außen-/Innenverkleidung", value: "Verzinktes, farbbeschichtetes Stahlblech, 0,55 mm" },
-            { label: "Farbe innen/außen", value: "RAL 9002 Grauweiß, weitere RAL-Töne auf Anfrage" },
-            { label: "Isolierung", value: "PUR-Hartschaum 50–150 mm oder Mineralwolle 60–200 mm, je nach gewünschtem U-Wert" },
-          ],
-        },
-        {
-          heading: "Ecksäulen",
-          rows: [
-            { label: "Ausführung", value: "Kaltgewalzte Stahlprofile, 3 mm, mit Boden- und Dachrahmen verschweißt oder verschraubt; Tragfähigkeit ab ca. 1.800 kg/Säule" },
-            { label: "Isolierung", value: "Gepresste Steinwolleplatten gegen Kältebrücken" },
-          ],
-        },
-        {
-          heading: "Lackierung",
-          rows: [
-            { label: "Vorbehandlung", value: "Entfettung und Grundierung der Stahlprofile, galvanische Verzinkung der Dünnbleche" },
-            { label: "Beschichtung", value: "Epoxy-Grundierung mit Vinylacryl-Decklack bzw. PUR-Einschichtlack auf Dünnblech" },
-          ],
-        },
-        {
-          heading: "Türen",
-          rows: [
-            { label: "Konstruktion", value: "Einflügelige Stahltür, lichtes Maß ca. 820 × 2.000 mm, links oder rechts angeschlagen" },
-            { label: "Isolierung", value: "Isolierplatte, ca. 40 mm" },
-          ],
-        },
-        {
-          heading: "Fenster",
-          rows: [
-            { label: "Konstruktion", value: "Kunststofffenster mit Dreh-/Kippbeschlag, ca. 790 × 1.000 mm, Isolierverglasung, Rollladen optional" },
-            { label: "Wärmedämmung", value: "Uw-Wert ca. 1,6 W/m²K" },
-          ],
-        },
-        {
-          heading: "Elektroinstallation",
-          rows: [
-            { label: "Netzanschluss", value: "CEE-Anschluss, 5-polig, 32 A, 400 V, nach VDE-Richtlinien" },
-            { label: "Verteilung", value: "Unterputz mit FI-Schutzschalter und Sicherungsautomaten" },
-            { label: "Beleuchtung", value: "Wannenleuchten, Spiegelrasterleuchte optional" },
-            { label: "Heizung", value: "Elektrokonvektor, ca. 2 kW, mit Thermostat" },
-            { label: "Klima", value: "Optional als Kompakt- oder Split-Klimagerät" },
-          ],
-        },
-      ],
-      loadNote:
-        "Windbeständigkeit bis ca. 100 km/h, Dach-Schneelast im Standard ca. 1,5 kN/m² (Verstärkung auf Anfrage). Die zulässige Schneelast am Aufstellort ist vor Bestellung zu prüfen; bei höheren örtlichen Lasten sind zusätzliche Maßnahmen erforderlich.",
+      sourceNote: PLACEHOLDER_SOURCE_NOTE,
+      dimensions: buildDimensions(["ca. 1.225 kg", "ca. 1.650 kg", "ca. 1.850 kg", "ca. 2.150 kg", "ca. 2.550 kg"]),
+      sections: baseConstructionSections(),
+      insulationTable: INSULATION_TABLE,
+      loadNote: STANDARD_LOAD_NOTE,
     },
   },
   {
@@ -195,6 +242,15 @@ export const sortiment: SortimentProduct[] = [
         ],
       },
     ],
+    // TODO(ICON): Platzhalter, 1:1 Struktur wie Bürocontainer — bitte mit echten
+    // Werten für Wohn-/Unterkunftscontainer ersetzen (Wandpaneele, Türen ggf. gleich).
+    technicalDescription: {
+      sourceNote: PLACEHOLDER_SOURCE_NOTE,
+      dimensions: buildDimensions(["ca. 1.225 kg", "ca. 1.650 kg", "ca. 1.850 kg", "ca. 2.150 kg", "ca. 2.550 kg"]),
+      sections: baseConstructionSections(),
+      insulationTable: INSULATION_TABLE,
+      loadNote: STANDARD_LOAD_NOTE,
+    },
   },
   {
     id: "sanitaercontainer",
@@ -228,6 +284,52 @@ export const sortiment: SortimentProduct[] = [
         ],
       },
     ],
+    // TODO(ICON): Platzhalterwerte, orientiert an einem Referenz-Datenblatt eines
+    // Mitbewerbers (Conzept, WC-Container) — durch echte ICON-Werte ersetzen.
+    technicalDescription: {
+      sourceNote:
+        "Vorläufige technische Angaben, orientiert an marktüblichen Sanitärcontainer-Standardgrößen. Wird durch die tatsächlichen ICON-Werte ersetzt.",
+      dimensions: buildDimensions(["ca. 2.175 kg", "ca. 2.525 kg", "ca. 2.875 kg", "ca. 3.250 kg", "ca. 3.700 kg"]),
+      sections: [
+        ...baseConstructionSections().filter((s) => !["Fenster", "Elektroinstallation"].includes(s.heading)),
+        {
+          heading: "Fenster",
+          rows: [
+            { label: "Konstruktion", value: "Kunststofffenster mit Dreh-/Kippbeschlag, lichtes Maß ca. 550 × 550 mm, Isolierverglasung — kleinformatig aus Gründen der Privatsphäre" },
+            { label: "Wärmedämmung", value: "Uw-Wert ca. 1,6 W/m²K" },
+          ],
+        },
+        {
+          heading: "Elektroinstallation",
+          rows: [
+            { label: "Ausführung", value: "Feuchtraumausführung, Unterputz, nach VDE-Richtlinien" },
+            { label: "Netzanschluss", value: "CEE-Anschluss, 5-polig, 32 A, 230/400 V, 50/60 Hz" },
+            { label: "Verteilung", value: "Unterputz-Verteilerkasten mit FI-Schutzschalter und Sicherungsautomaten" },
+            { label: "Beleuchtung", value: "Wannenleuchten" },
+            { label: "Heizung", value: "Von Frostwächter (ca. 0,5 kW) bis Elektrokonvektor (ca. 2 kW), feuchtraumgeeignet" },
+            { label: "Entlüftung", value: "Ventilator zur Luftabsaugung, ca. 170 m³/h" },
+            { label: "Klima", value: "Optional als Kompakt- oder Split-Klimagerät" },
+          ],
+        },
+      ],
+      insulationTable: INSULATION_TABLE,
+      loadNote: STANDARD_LOAD_NOTE,
+      extraSections: [
+        {
+          heading: "Sanitärausstattung",
+          rows: [
+            { label: "Verrohrung", value: "Nutzwasser in Kunststoff oder Alu-Verbund; Ab- und Brauchwasser in PVC" },
+            { label: "WC-Kabinen", value: "Porzellanmuschel mit Spülkasten, inkl. Papierhalter" },
+            { label: "Urinal", value: "Porzellan mit Druckspüler" },
+            { label: "Dusche", value: "Kunststoffdusche inkl. Vorhang und Duscharmatur" },
+            { label: "Waschbecken", value: "Porzellanbecken inkl. Armatur, Spiegel, Abfluss und Handtuchhalter" },
+            { label: "Bodenabfluss", value: "Optional, PVC, bodeneben integriert" },
+            { label: "Warmwasser", value: "Je nach Bedarf vom Durchlauferhitzer (ca. 5 l) bis zum Boiler (10–500 l)" },
+            { label: "Option", value: "Barrierefreie Ausstattung mit Sicherheitsarmaturen" },
+          ],
+        },
+      ],
+    },
   },
   {
     id: "schulcontainer-bildungsgebaeude",
@@ -274,6 +376,29 @@ export const sortiment: SortimentProduct[] = [
         ],
       },
     ],
+    // TODO(ICON): Platzhalter, 1:1 Struktur wie Bürocontainer — bitte mit echten
+    // Werten für Schulcontainer/Bildungsgebäude ersetzen. Die "Genehmigung &
+    // Regularien"-Zeilen sind eine grobe Orientierung (u. a. aus FAGSI-Recherche
+    // zu temporären Schulbauten) und ersetzen keine rechtliche Prüfung.
+    technicalDescription: {
+      sourceNote: PLACEHOLDER_SOURCE_NOTE,
+      dimensions: buildDimensions(["ca. 1.225 kg", "ca. 1.650 kg", "ca. 1.850 kg", "ca. 2.150 kg", "ca. 2.550 kg"]),
+      sections: baseConstructionSections(),
+      insulationTable: INSULATION_TABLE,
+      loadNote: STANDARD_LOAD_NOTE,
+      extraSections: [
+        {
+          heading: "Genehmigung & Regularien",
+          rows: [
+            { label: "Nutzungsdauer", value: "Temporäre Schulbauten werden oft als befristete bauliche Anlage genehmigt (in der Praxis nicht selten bis ca. 24 Monate) — Fristen und Verfahren sind je nach Bundesland und zuständiger Bauaufsicht unterschiedlich und im Einzelfall zu prüfen" },
+            { label: "Brandschutz", value: "Brandschutzkonzept mit Fluchtwegen und Rauchwarnmeldern; in mehreren Bundesländern sind vereinfachte Zulassungen (vBG) für Schulbauten in Modulbauweise möglich" },
+            { label: "Barrierefreiheit", value: "Barrierefreie Ausführung nach DIN-Vorgaben planbar" },
+            { label: "Raumluft", value: "Schadstoffarme, geprüfte Materialien; niedrige VOC-Werte deutlich unter üblichen Richtwerten anstrebbar" },
+            { label: "Rückbau", value: "Vollständig rückbaubar und versetzbar bei Nutzungsende" },
+          ],
+        },
+      ],
+    },
   },
   {
     id: "baustellencontainer",
@@ -307,6 +432,15 @@ export const sortiment: SortimentProduct[] = [
         ],
       },
     ],
+    // TODO(ICON): Platzhalter, 1:1 Struktur wie Bürocontainer — bitte mit echten
+    // Werten für Baustellencontainer ersetzen.
+    technicalDescription: {
+      sourceNote: PLACEHOLDER_SOURCE_NOTE,
+      dimensions: buildDimensions(["ca. 1.225 kg", "ca. 1.650 kg", "ca. 1.850 kg", "ca. 2.150 kg", "ca. 2.550 kg"]),
+      sections: baseConstructionSections(),
+      insulationTable: INSULATION_TABLE,
+      loadNote: STANDARD_LOAD_NOTE,
+    },
   },
   {
     id: "aufenthalts-sozialraeume",
@@ -340,6 +474,15 @@ export const sortiment: SortimentProduct[] = [
         ],
       },
     ],
+    // TODO(ICON): Platzhalter, 1:1 Struktur wie Bürocontainer — bitte mit echten
+    // Werten für Aufenthalts-/Sozialräume ersetzen.
+    technicalDescription: {
+      sourceNote: PLACEHOLDER_SOURCE_NOTE,
+      dimensions: buildDimensions(["ca. 1.225 kg", "ca. 1.650 kg", "ca. 1.850 kg", "ca. 2.150 kg", "ca. 2.550 kg"]),
+      sections: baseConstructionSections(),
+      insulationTable: INSULATION_TABLE,
+      loadNote: STANDARD_LOAD_NOTE,
+    },
   },
 ];
 
