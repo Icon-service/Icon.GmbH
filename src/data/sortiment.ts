@@ -11,6 +11,27 @@ export type Variant = {
   planung: string;
 };
 
+export type DimensionRow = {
+  size: string;
+  outer: string;
+  inner: string;
+  area: string;
+  weight: string;
+};
+
+export type SpecSection = {
+  heading: string;
+  rows: { label: string; value: string }[];
+};
+
+export type TechnicalDescription = {
+  /** where the placeholder figures below came from, shown as an on-page note */
+  sourceNote: string;
+  dimensions: DimensionRow[];
+  sections: SpecSection[];
+  loadNote: string;
+};
+
 export type SortimentProduct = {
   id: string;
   slugDe: string;
@@ -21,6 +42,7 @@ export type SortimentProduct = {
   introExtra?: string;
   variants: Variant[];
   detailBlocksDe: Block[];
+  technicalDescription?: TechnicalDescription;
 };
 
 export const sortiment: SortimentProduct[] = [
@@ -56,6 +78,91 @@ export const sortiment: SortimentProduct[] = [
         ],
       },
     ],
+    // TODO(ICON): Platzhalterwerte, orientiert an einem Referenz-Datenblatt eines
+    // Mitbewerbers (Conzept) — durch echte ICON-Werte ersetzen, sobald verfügbar.
+    technicalDescription: {
+      sourceNote:
+        "Vorläufige technische Angaben, orientiert an marktüblichen Bürocontainer-Standardgrößen. Wird durch die tatsächlichen ICON-Werte ersetzt.",
+      dimensions: [
+        { size: "10'", outer: "2.991 × 2.438 × 2.791 mm", inner: "2.820 × 2.267 × 2.500 mm", area: "ca. 6,4 m²", weight: "ca. 1.225 kg" },
+        { size: "16'", outer: "4.886 × 2.438 × 2.791 mm", inner: "4.715 × 2.267 × 2.500 mm", area: "ca. 10,7 m²", weight: "ca. 1.650 kg" },
+        { size: "20'", outer: "6.058 × 2.438 × 2.791 mm", inner: "5.887 × 2.267 × 2.500 mm", area: "ca. 13,4 m²", weight: "ca. 1.850 kg" },
+        { size: "24'", outer: "7.335 × 2.438 × 2.791 mm", inner: "7.164 × 2.267 × 2.500 mm", area: "ca. 16,3 m²", weight: "ca. 2.150 kg" },
+        { size: "30'", outer: "9.125 × 2.438 × 2.791 mm", inner: "8.954 × 2.267 × 2.500 mm", area: "ca. 20,3 m²", weight: "ca. 2.550 kg" },
+      ],
+      sections: [
+        {
+          heading: "Dach",
+          rows: [
+            { label: "Rahmenkonstruktion", value: "Kaltgewalzte Stahlprofile, 3 mm, verschweißt; Containerecken nach ISO-Norm" },
+            { label: "Dachdeckung", value: "Verzinktes, beschichtetes Stahlblech, 0,55 mm, umlaufender Doppelfalz" },
+            { label: "Isolierung", value: "Mineralwolle 100 mm, Brandklasse A1 (nicht brennbar)" },
+            { label: "Wärmedämmung", value: "U-Wert ca. 0,36 W/m²K" },
+            { label: "Farbe innen", value: "RAL 9002 Grauweiß" },
+          ],
+        },
+        {
+          heading: "Boden",
+          rows: [
+            { label: "Rahmenkonstruktion", value: "Kaltgewalzte Stahlprofile, 3 mm, verschweißt" },
+            { label: "Gabelstaplertaschen", value: "Optional, Achsabstand 1.200 mm" },
+            { label: "Unterboden", value: "Verzinktes, beschichtetes Blech, 0,75 mm" },
+            { label: "Fußboden", value: "Zementgebundene Spanplatte, 21 mm, wasserabweisend, formaldehydfrei" },
+            { label: "Bodenbelag", value: "Homogener PVC-Belag, 1,5 mm, Rutschfestigkeitsklasse R9" },
+            { label: "Wärmedämmung", value: "U-Wert ca. 0,34 W/m²K" },
+          ],
+        },
+        {
+          heading: "Wandpaneele",
+          rows: [
+            { label: "Ausführung", value: "Auswechselbare Wandelemente" },
+            { label: "Außen-/Innenverkleidung", value: "Verzinktes, farbbeschichtetes Stahlblech, 0,55 mm" },
+            { label: "Farbe innen/außen", value: "RAL 9002 Grauweiß, weitere RAL-Töne auf Anfrage" },
+            { label: "Isolierung", value: "PUR-Hartschaum 50–150 mm oder Mineralwolle 60–200 mm, je nach gewünschtem U-Wert" },
+          ],
+        },
+        {
+          heading: "Ecksäulen",
+          rows: [
+            { label: "Ausführung", value: "Kaltgewalzte Stahlprofile, 3 mm, mit Boden- und Dachrahmen verschweißt oder verschraubt; Tragfähigkeit ab ca. 1.800 kg/Säule" },
+            { label: "Isolierung", value: "Gepresste Steinwolleplatten gegen Kältebrücken" },
+          ],
+        },
+        {
+          heading: "Lackierung",
+          rows: [
+            { label: "Vorbehandlung", value: "Entfettung und Grundierung der Stahlprofile, galvanische Verzinkung der Dünnbleche" },
+            { label: "Beschichtung", value: "Epoxy-Grundierung mit Vinylacryl-Decklack bzw. PUR-Einschichtlack auf Dünnblech" },
+          ],
+        },
+        {
+          heading: "Türen",
+          rows: [
+            { label: "Konstruktion", value: "Einflügelige Stahltür, lichtes Maß ca. 820 × 2.000 mm, links oder rechts angeschlagen" },
+            { label: "Isolierung", value: "Isolierplatte, ca. 40 mm" },
+          ],
+        },
+        {
+          heading: "Fenster",
+          rows: [
+            { label: "Konstruktion", value: "Kunststofffenster mit Dreh-/Kippbeschlag, ca. 790 × 1.000 mm, Isolierverglasung, Rollladen optional" },
+            { label: "Wärmedämmung", value: "Uw-Wert ca. 1,6 W/m²K" },
+          ],
+        },
+        {
+          heading: "Elektroinstallation",
+          rows: [
+            { label: "Netzanschluss", value: "CEE-Anschluss, 5-polig, 32 A, 400 V, nach VDE-Richtlinien" },
+            { label: "Verteilung", value: "Unterputz mit FI-Schutzschalter und Sicherungsautomaten" },
+            { label: "Beleuchtung", value: "Wannenleuchten, Spiegelrasterleuchte optional" },
+            { label: "Heizung", value: "Elektrokonvektor, ca. 2 kW, mit Thermostat" },
+            { label: "Klima", value: "Optional als Kompakt- oder Split-Klimagerät" },
+          ],
+        },
+      ],
+      loadNote:
+        "Windbeständigkeit bis ca. 100 km/h, Dach-Schneelast im Standard ca. 1,5 kN/m² (Verstärkung auf Anfrage). Die zulässige Schneelast am Aufstellort ist vor Bestellung zu prüfen; bei höheren örtlichen Lasten sind zusätzliche Maßnahmen erforderlich.",
+    },
   },
   {
     id: "wohn-unterkunftscontainer",

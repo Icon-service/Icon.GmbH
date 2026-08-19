@@ -3,6 +3,7 @@ import { Image } from "astro:assets";
 import Layout from "../../layouts/Layout.astro";
 import BlockRenderer from "../../components/BlockRenderer.astro";
 import PlaceholderFrame from "../../components/PlaceholderFrame.astro";
+import TechSpecSheet from "../../components/TechSpecSheet.astro";
 import { sortiment } from "../../data/sortiment";
 import { useTranslations, localizedPath } from "../../i18n/utils";
 import { getImage } from "../../lib/images";
@@ -102,17 +103,35 @@ const specRows = [
       <BlockRenderer blocks={product.detailBlocksDe} />
     </div>
 
-    <div class="card mt-14 bg-mist p-6 sm:p-8">
-      <h2 class="text-xl text-ink">{t("sortiment.specs.title")}</h2>
-      <p class="mt-3 text-steel">{t("sortiment.specs.lead")}</p>
-      <ul class="mt-4 space-y-2">
-        {specRows.map((row) => (
-          <li class="border-l-2 border-line pl-3 text-sm text-steel">{row}</li>
-        ))}
-      </ul>
-      <a href={localizedPath("contact", lang)} class="btn-primary mt-6 inline-block">
-        {t("nav.cta")}
-      </a>
-    </div>
+    {product.technicalDescription && (
+      <div class="mt-14">
+        <h2 class="text-2xl sm:text-3xl">Technische Beschreibung</h2>
+        <div class="mt-6">
+          <TechSpecSheet spec={product.technicalDescription} />
+        </div>
+      </div>
+    )}
+
+    {product.technicalDescription ? (
+      <div class="card mt-14 bg-mist p-6 sm:p-8">
+        <p class="text-lg text-ink">Fragen zu diesem Produkt?</p>
+        <a href={localizedPath("contact", lang)} class="btn-primary mt-4 inline-block">
+          {t("nav.cta")}
+        </a>
+      </div>
+    ) : (
+      <div class="card mt-14 bg-mist p-6 sm:p-8">
+        <h2 class="text-xl text-ink">{t("sortiment.specs.title")}</h2>
+        <p class="mt-3 text-steel">{t("sortiment.specs.lead")}</p>
+        <ul class="mt-4 space-y-2">
+          {specRows.map((row) => (
+            <li class="border-l-2 border-line pl-3 text-sm text-steel">{row}</li>
+          ))}
+        </ul>
+        <a href={localizedPath("contact", lang)} class="btn-primary mt-6 inline-block">
+          {t("nav.cta")}
+        </a>
+      </div>
+    )}
   </section>
 </Layout>

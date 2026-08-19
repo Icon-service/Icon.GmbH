@@ -24,129 +24,138 @@
   --container-wide: 85rem;
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
-@media (prefers-reduced-motion: reduce) {
+@layer base {
   html {
-    scroll-behavior: auto;
+    scroll-behavior: smooth;
   }
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-weight: 760;
+    line-height: 1.08;
+    letter-spacing: -0.015em;
+    color: var(--color-ink);
+    text-wrap: balance;
+  }
+
+  h1 {
+    letter-spacing: -0.025em;
+  }
+
+  ::selection {
+    background-color: var(--color-signal);
+    color: var(--color-paper);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-signal);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  a {
+    color: inherit;
+    text-underline-offset: 0.15em;
+    transition: color 0.2s ease;
   }
 }
 
-body {
-  background-color: var(--color-paper);
-  color: var(--color-ink);
-  font-family: var(--font-sans);
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-}
+/*
+  Component classes live in Tailwind's "components" layer so that utility
+  classes (bg-mist, text-ink, border-signal, ...) always win when combined
+  with them — matching normal Tailwind override behavior.
+*/
+@layer components {
+  /* Eyebrow / section label — matches the original .icon-topline treatment exactly. */
+  .icon-topline {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: var(--color-signal);
+  }
 
-h1,
-h2,
-h3,
-h4 {
-  font-weight: 760;
-  line-height: 1.08;
-  letter-spacing: -0.015em;
-  color: var(--color-ink);
-  text-wrap: balance;
-}
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 4px;
+    background-color: var(--color-signal);
+    color: var(--color-paper);
+    font-weight: 700;
+    font-size: 0.94rem;
+    padding: 0.85rem 1.3rem;
+    box-shadow: 0 1px 2px rgba(21, 24, 27, 0.06);
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  }
+  .btn-primary:hover {
+    background-color: var(--color-signal-dark);
+    box-shadow: 0 8px 20px -6px rgba(200, 74, 47, 0.45);
+    transform: translateY(-1px);
+  }
+  .btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(21, 24, 27, 0.06);
+  }
 
-h1 {
-  letter-spacing: -0.025em;
-}
+  .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 4px;
+    border: 1px solid var(--color-line);
+    color: var(--color-ink);
+    font-weight: 700;
+    font-size: 0.94rem;
+    padding: 0.85rem 1.3rem;
+    transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  }
+  .btn-outline:hover {
+    border-color: var(--color-ink);
+    background-color: var(--color-ink);
+    color: var(--color-paper);
+    transform: translateY(-1px);
+  }
+  .btn-outline:active {
+    transform: translateY(0);
+  }
 
-::selection {
-  background-color: var(--color-signal);
-  color: var(--color-paper);
-}
-
-:focus-visible {
-  outline: 2px solid var(--color-signal);
-  outline-offset: 2px;
-  border-radius: 2px;
-}
-
-/* Eyebrow / section label — matches the original .icon-topline treatment exactly. */
-.icon-topline {
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 0.78rem;
-  font-weight: 800;
-  color: var(--color-signal);
-}
-
-.btn-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  border-radius: 4px;
-  background-color: var(--color-signal);
-  color: var(--color-paper);
-  font-weight: 700;
-  font-size: 0.94rem;
-  padding: 0.85rem 1.3rem;
-  box-shadow: 0 1px 2px rgba(21, 24, 27, 0.06);
-  transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
-}
-.btn-primary:hover {
-  background-color: var(--color-signal-dark);
-  box-shadow: 0 8px 20px -6px rgba(200, 74, 47, 0.45);
-  transform: translateY(-1px);
-}
-.btn-primary:active {
-  transform: translateY(0);
-  box-shadow: 0 1px 2px rgba(21, 24, 27, 0.06);
-}
-
-.btn-outline {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  border-radius: 4px;
-  border: 1px solid var(--color-line);
-  color: var(--color-ink);
-  font-weight: 700;
-  font-size: 0.94rem;
-  padding: 0.85rem 1.3rem;
-  transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
-}
-.btn-outline:hover {
-  border-color: var(--color-ink);
-  background-color: var(--color-ink);
-  color: var(--color-paper);
-  transform: translateY(-1px);
-}
-.btn-outline:active {
-  transform: translateY(0);
-}
-
-/* Shared surface for cards, panels and framed content. */
-.card {
-  border-radius: 4px;
-  border: 1px solid var(--color-line);
-  background-color: var(--color-paper);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
-}
-a.card:hover,
-.card.is-interactive:hover {
-  border-color: var(--color-graphite);
-  box-shadow: 0 16px 32px -20px rgba(21, 24, 27, 0.35);
-  transform: translateY(-2px);
-}
-
-a {
-  color: inherit;
-  text-underline-offset: 0.15em;
-  transition: color 0.2s ease;
+  /* Shared surface for cards, panels and framed content. */
+  .card {
+    border-radius: 4px;
+    border: 1px solid var(--color-line);
+    background-color: var(--color-paper);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  }
+  a.card:hover,
+  .card.is-interactive:hover {
+    border-color: var(--color-graphite);
+    box-shadow: 0 16px 32px -20px rgba(21, 24, 27, 0.35);
+    transform: translateY(-2px);
+  }
 }
