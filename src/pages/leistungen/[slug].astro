@@ -35,7 +35,7 @@ const { leistung } = Astro.props;
       <Image
         src={getImage(leistung.heroImage)}
         alt={leistung.name[lang]}
-        class="mx-auto max-h-[28rem] w-full max-w-(--container-wide) object-cover px-6"
+        class="mx-auto max-h-[28rem] w-full max-w-(--container-wide) rounded object-cover px-6"
         widths={[640, 1024, 1600]}
         sizes="(min-width: 1360px) 1360px, 100vw"
       />
@@ -69,7 +69,7 @@ const { leistung } = Astro.props;
       </div>
     )}
 
-    <div class="mt-14 rounded border border-line bg-mist p-6 sm:p-8">
+    <div class="card mt-14 bg-mist p-6 sm:p-8">
       <p class="text-lg text-ink">
         {leistung.ctaLabel
           ? "Sie planen ein Projekt in diesem Bereich?"

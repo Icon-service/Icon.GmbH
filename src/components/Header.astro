@@ -1,5 +1,6 @@
 ---
 import { getLangFromUrl, useTranslations, localizedPath } from "../i18n/utils";
+import { leistungen } from "../data/leistungen";
 
 type Props = { altPath?: string };
 const { altPath } = Astro.props as Props;
@@ -8,25 +9,38 @@ const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const otherLang = lang === "de" ? "en" : "de";
 const switchHref = altPath ?? (lang === "de" ? "/en" : "/");
+const home = lang === "en" ? "/en" : "/";
 
+const byId = (id: string) => leistungen.find((l) => l.id === id)!;
+const slugFor = (l: (typeof leistungen)[number]) => (lang === "en" ? l.slugEn : l.slugDe);
+
+const containerbau = byId("containerbau");
+const modulbau = byId("modulbau");
+const stahlbau = byId("stahlbau-hallen");
+const militaer = byId("militaerische-infrastruktur");
+
+// Flat top-level structure, mirroring the original ICON site's main menu.
 const nav = [
   { href: localizedPath("services", lang), label: t("nav.services") },
+  { href: localizedPath("services", lang, slugFor(containerbau)), label: containerbau.name[lang] },
+  { href: localizedPath("services", lang, slugFor(modulbau)), label: modulbau.name[lang] },
+  { href: localizedPath("services", lang, slugFor(stahlbau)), label: stahlbau.name[lang] },
+  { href: localizedPath("services", lang, slugFor(militaer)), label: militaer.name[lang] },
   { href: localizedPath("models", lang), label: t("nav.models") },
   { href: localizedPath("references", lang), label: t("nav.references") },
-  { href: localizedPath("about", lang), label: t("nav.about") },
+  { href: localizedPath("contact", lang), label: t("nav.contact") },
 ];
-const home = lang === "en" ? "/en" : "/";
 ---
 
-<header class="border-b border-line bg-paper">
-  <div class="mx-auto flex max-w-(--container-wide) items-center justify-between gap-6 px-6 py-4">
-    <a href={home} class="text-[1.35rem] font-extrabold tracking-tight text-ink">
+<header class="sticky top-0 z-40 border-b border-line bg-paper/95 backdrop-blur">
+  <div class="mx-auto flex max-w-(--container-wide) items-center justify-between gap-4 px-6 py-4">
+    <a href={home} class="shrink-0 text-[1.35rem] font-extrabold tracking-tight text-ink">
       ICON <span class="text-signal">GmbH</span>
     </a>
 
-    <nav class="hidden items-center gap-5 md:flex">
+    <nav class="hidden items-center gap-x-4 gap-y-1 lg:flex lg:flex-wrap lg:justify-end">
       {nav.map((item) => (
-        <a href={item.href} class="text-[0.93rem] font-semibold text-ink hover:text-signal">
+        <a href={item.href} class="whitespace-nowrap text-[13px] font-semibold text-ink hover:text-signal">
           {item.label}
         </a>
       ))}
@@ -40,9 +54,28 @@ const home = lang === "en" ? "/en" : "/";
       >
         {lang === "de" ? "DE" : "EN"} <span class="text-steel/40">/</span> {otherLang.toUpperCase()}
       </a>
-      <a href={localizedPath("contact", lang)} class="btn-primary hidden text-sm sm:inline-block">
-        {t("nav.cta")}
-      </a>
+
+      <details class="group relative lg:hidden">
+        <summary
+          class="flex h-9 w-9 cursor-pointer list-none items-center justify-center rounded border border-line [&::-webkit-details-marker]:hidden"
+          aria-label={lang === "de" ? "Menü öffnen" : "Open menu"}
+        >
+          <svg width="18" height="14" viewBox="0 0 18 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 1h18M0 7h18M0 13h18" stroke="currentColor" stroke-width="1.5" />
+          </svg>
+        </summary>
+        <nav class="card absolute right-0 top-[calc(100%+0.75rem)] z-50 w-64 bg-paper p-4 shadow-xl">
+          <ul class="flex flex-col gap-3">
+            {nav.map((item) => (
+              <li>
+                <a href={item.href} class="block text-sm font-semibold text-ink hover:text-signal">
+                  {item.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </details>
     </div>
   </div>
 </header>

@@ -1,8 +1,10 @@
 ---
+import { Image } from "astro:assets";
 import Layout from "../../../layouts/Layout.astro";
 import PlaceholderFrame from "../../../components/PlaceholderFrame.astro";
 import { leistungen } from "../../../data/leistungen";
 import { useTranslations, localizedPath } from "../../../i18n/utils";
+import { getImage } from "../../../lib/images";
 
 const lang = "en" as const;
 const t = useTranslations(lang);
@@ -24,8 +26,18 @@ const t = useTranslations(lang);
   <section class="mx-auto max-w-(--container-wide) px-6 py-16">
     <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {leistungen.map((l, i) => (
-        <a href={localizedPath("services", lang, l.slugEn)} class="group rounded border border-line p-5 transition-colors hover:border-signal">
-          <PlaceholderFrame label={`${l.name[lang]} image coming soon`} class="mb-4" />
+        <a href={localizedPath("services", lang, l.slugEn)} class="card is-interactive group block p-5">
+          {(l.cardImage ?? l.heroImage) ? (
+            <Image
+              src={getImage(l.cardImage ?? l.heroImage!)}
+              alt={l.name[lang]}
+              class="mb-4 aspect-4/3 w-full rounded object-cover"
+              widths={[320, 480]}
+              sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+            />
+          ) : (
+            <PlaceholderFrame label={`${l.name[lang]} image coming soon`} class="mb-4" />
+          )}
           <p class="text-sm font-bold text-steel">{String(i + 1).padStart(2, "0")}</p>
           <h2 class="mt-1 text-xl text-ink group-hover:text-signal">{l.name[lang]}</h2>
           <p class="mt-2 text-sm text-steel">{l.homeCardText[lang]}</p>
