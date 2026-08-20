@@ -1,0 +1,99 @@
+---
+import { Image } from "astro:assets";
+import type { BallisticUnit } from "../data/ballisticUnit";
+import { getImage } from "../lib/images";
+
+type Props = { unit: BallisticUnit };
+const { unit } = Astro.props as Props;
+---
+
+<div class="space-y-12">
+  <p class="max-w-2xl text-lg text-steel">{unit.intro}</p>
+
+  <div class="rounded border-2 border-signal bg-mist p-5 sm:p-6">
+    <p class="icon-topline text-signal">{unit.certification.standard}</p>
+    <p class="mt-2 text-lg text-ink">{unit.certification.threatLevels}</p>
+    <p class="mt-1 text-sm text-steel">Geprüft durch {unit.certification.testedBy}</p>
+    <p class="mt-3 border-t border-line pt-3 text-xs text-steel">{unit.certification.note}</p>
+  </div>
+
+  {unit.gallery.length > 0 && (
+    <div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      {unit.gallery.map((g) => (
+        <figure>
+          <Image
+            src={getImage(g.file)}
+            alt={g.caption}
+            class="aspect-4/3 w-full rounded-lg object-cover ring-1 ring-ink/5"
+            widths={[320, 480]}
+            sizes="(min-width: 1024px) 25vw, 50vw"
+          />
+          <figcaption class="mt-1.5 text-xs text-steel">{g.caption}</figcaption>
+        </figure>
+      ))}
+    </div>
+  )}
+
+  <div class="card bg-ink p-5 text-paper sm:p-6">
+    <p class="icon-topline">Kennwerte</p>
+    <dl class="mt-4 grid gap-4 sm:grid-cols-2">
+      {unit.frame.map((row) => (
+        <div>
+          <dt class="text-xs font-bold uppercase tracking-wide text-mist/60">{row.label}</dt>
+          <dd class="mt-0.5 text-sm text-mist">{row.value}</dd>
+        </div>
+      ))}
+    </dl>
+  </div>
+
+  <div>
+    <h3 class="text-xl text-ink">Vorteile im Überblick</h3>
+    <div class="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {unit.usps.map((usp) => (
+        <div class="card p-5">
+          <h4 class="text-lg text-ink">{usp.title}</h4>
+          <p class="mt-2 text-sm text-steel">{usp.text}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div class="card p-5 sm:p-6">
+    <h3 class="text-xl text-ink">Innenausstattung — projektspezifisch</h3>
+    <p class="mt-2 text-sm text-steel">{unit.fitOut.intro}</p>
+    <div class="mt-4 flex flex-wrap gap-2">
+      {unit.fitOut.options.map((option) => (
+        <span class="rounded-full border border-line px-3 py-1 text-sm text-ink">{option}</span>
+      ))}
+    </div>
+  </div>
+
+  <div>
+    <h3 class="text-xl text-ink">Wandaufbau und Konstruktionsdetails</h3>
+    <div class="mt-5 grid gap-5 sm:grid-cols-2">
+      {unit.buildups.map((b) => (
+        <div class="card p-5">
+          <div class="flex items-baseline justify-between gap-3">
+            <p class="icon-topline">{b.heading}</p>
+            {b.totalThickness !== "—" && <p class="text-sm font-bold text-steel">{b.totalThickness}</p>}
+          </div>
+          <ol class="mt-3 space-y-1.5">
+            {b.layers.map((layer, i) => (
+              <li class="flex gap-2 text-sm text-ink">
+                <span class="text-steel">{String(i + 1).padStart(2, "0")}</span>
+                <span>{layer}</span>
+              </li>
+            ))}
+          </ol>
+          {b.note && <p class="mt-3 border-t border-line pt-3 text-xs text-steel">{b.note}</p>}
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div class="card bg-mist p-5 text-sm text-ink">{unit.assemblyNote}</div>
+
+  <div class="card border-2 border-ink p-5 text-sm text-ink">{unit.provenNote}</div>
+
+  <p class="text-xs text-steel">{unit.sourceNote}</p>
+</div>

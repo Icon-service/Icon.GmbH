@@ -1,8 +1,10 @@
 ---
 import { Image } from "astro:assets";
 import Layout from "../../layouts/Layout.astro";
+import PageHero from "../../components/PageHero.astro";
 import BlockRenderer from "../../components/BlockRenderer.astro";
 import ModulSystemSheet from "../../components/ModulSystemSheet.astro";
+import BallisticUnitSheet from "../../components/BallisticUnitSheet.astro";
 import { leistungen } from "../../data/leistungen";
 import { useTranslations, localizedPath } from "../../i18n/utils";
 import { getImage } from "../../lib/images";
@@ -25,21 +27,32 @@ const { leistung } = Astro.props;
   altPath={`/en/services/${leistung.slugEn}`}
 >
   <section class="border-b border-line">
-    <div class="mx-auto max-w-(--container-wide) px-6 py-16">
-      <a href={localizedPath("services", lang)} class="text-sm font-semibold text-steel hover:text-signal">
-        ← {t("services.overview.title")}
-      </a>
-      <h1 class="mt-3 text-4xl sm:text-5xl">{leistung.name[lang]}</h1>
-      <p class="mt-4 max-w-2xl text-lg text-steel">{leistung.heroLead[lang]}</p>
-    </div>
-    {leistung.heroImage && (
-      <Image
-        src={getImage(leistung.heroImage)}
-        alt={leistung.name[lang]}
-        class="mx-auto max-h-[28rem] w-full max-w-(--container-wide) rounded object-cover px-6"
-        widths={[640, 1024, 1600]}
-        sizes="(min-width: 1360px) 1360px, 100vw"
-      />
+    <PageHero
+      eyebrow={t("hero.eyebrow")}
+      title={leistung.name[lang]}
+      lead={leistung.heroLead[lang]}
+      image={leistung.heroImage ? getImage(leistung.heroImage) : undefined}
+      imageAlt={leistung.name[lang]}
+      imageCaption={`ICON GmbH · ${leistung.name[lang]}`}
+      backHref={localizedPath("services", lang)}
+      backLabel={t("services.overview.title")}
+      priority
+    />
+    {leistung.gallery && leistung.gallery.length > 0 && (
+      <div class="mx-auto mb-16 grid max-w-(--container-wide) grid-cols-2 gap-3 px-6 lg:grid-cols-4">
+        {leistung.gallery.map((g) => (
+          <figure>
+            <Image
+              src={getImage(g.file)}
+              alt={g.caption}
+              class="aspect-4/3 w-full rounded-lg object-cover ring-1 ring-ink/5"
+              widths={[320, 480]}
+              sizes="(min-width: 1024px) 25vw, 50vw"
+            />
+            <figcaption class="mt-1.5 text-xs text-steel">{g.caption}</figcaption>
+          </figure>
+        ))}
+      </div>
     )}
   </section>
 
@@ -52,10 +65,32 @@ const { leistung } = Astro.props;
 
     {leistung.modulSystem && (
       <div class="mt-14">
-        <h2 class="text-2xl sm:text-3xl">Das G-CAP Modulsystem</h2>
+        <h2 class="text-2xl sm:text-3xl">Das ICON Modul System</h2>
         <div class="mt-6">
           <ModulSystemSheet system={leistung.modulSystem} />
         </div>
+      </div>
+    )}
+
+    {leistung.ballisticUnit && (
+      <div class="mt-14">
+        <h2 class="text-2xl sm:text-3xl">Der ICON Schutzcontainer</h2>
+        <div class="mt-6">
+          <BallisticUnitSheet unit={leistung.ballisticUnit} />
+        </div>
+      </div>
+    )}
+
+    {leistung.plannerCta && (
+      <div class="card mt-14 flex flex-wrap items-center justify-between gap-5 border-l-2 border-signal p-6 sm:p-8">
+        <div>
+          <p class="icon-topline">Neu</p>
+          <h3 class="mt-1.5 text-xl text-ink">Grundrissplaner: Container selbst anordnen</h3>
+          <p class="mt-2 max-w-xl text-sm text-steel">
+            Ordnen Sie unsere Container in Standardgrößen selbst auf einem Raster an und senden Sie Ihren Entwurf direkt als Skizze mit Ihrer Anfrage.
+          </p>
+        </div>
+        <a href="/grundrissplaner" class="btn-primary shrink-0">Grundrissplaner öffnen</a>
       </div>
     )}
 

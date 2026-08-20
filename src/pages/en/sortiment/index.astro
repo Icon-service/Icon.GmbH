@@ -1,6 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import Layout from "../../../layouts/Layout.astro";
+import PageHero from "../../../components/PageHero.astro";
 import PlaceholderFrame from "../../../components/PlaceholderFrame.astro";
 import { sortiment } from "../../../data/sortiment";
 import { useTranslations, localizedPath } from "../../../i18n/utils";
@@ -20,11 +21,15 @@ const cardImage: Record<string, string> = {
   altPath="/sortiment"
 >
   <section class="border-b border-line">
-    <div class="mx-auto max-w-(--container-wide) px-6 py-16">
-      <p class="icon-topline">{t("hero.eyebrow")}</p>
-      <h1 class="mt-3 text-4xl sm:text-5xl">{t("sortiment.overview.title")}</h1>
-      <p class="mt-4 max-w-xl text-lg text-steel">{t("sortiment.overview.lead")}</p>
-    </div>
+    <PageHero
+      eyebrow={t("hero.eyebrow")}
+      title={t("sortiment.overview.title")}
+      lead={t("sortiment.overview.lead")}
+      image={getImage("buerocontainer-aussenansicht-fenster.png")}
+      imageAlt="ICON office container, exterior"
+      imageCaption="ICON GmbH · Sortiment"
+      priority
+    />
   </section>
 
   <section class="mx-auto max-w-(--container-wide) px-6 py-16">
@@ -35,7 +40,7 @@ const cardImage: Record<string, string> = {
             <Image
               src={getImage(cardImage[p.id])}
               alt={p.name[lang]}
-              class="mb-4 aspect-4/3 w-full rounded object-cover"
+              class="mb-4 aspect-4/3 w-full rounded-lg object-cover"
               widths={[320, 480]}
               sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
             />

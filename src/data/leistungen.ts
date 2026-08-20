@@ -4,6 +4,8 @@
 
 import type { ModulSystem } from "./modulSystem";
 import { MODUL_SYSTEM } from "./modulSystem";
+import type { BallisticUnit } from "./ballisticUnit";
+import { BALLISTIC_UNIT } from "./ballisticUnit";
 
 export type Block =
   | { type: "paragraphs"; heading?: string; text: string[] }
@@ -27,6 +29,11 @@ export type Leistung = {
   ctaHref?: string;
   ctaLabel?: { de: string; en: string };
   modulSystem?: ModulSystem;
+  ballisticUnit?: BallisticUnit;
+  /** real project photography, filenames in src/assets/images */
+  gallery?: { file: string; caption: string }[];
+  /** shows a promo card linking to /grundrissplaner */
+  plannerCta?: boolean;
 };
 
 export const leistungen: Leistung[] = [
@@ -36,13 +43,14 @@ export const leistungen: Leistung[] = [
     slugEn: "container-construction",
     heroImage: "containerbau-hero.png",
     cardImage: "containerbau-icon-hero.png",
+    plannerCta: true,
     name: { de: "Containerbau", en: "Container Construction" },
     homeCardText: {
       de: "Büro-, Wohn-, Sanitär-, Technik-, Lager-, Baustellen- und Schutzcontainer als Einzelcontainer, Anlage oder Sonderbau.",
       en: "Office, residential, sanitary, technical, storage, site and protective containers — as single units, complexes or custom builds.",
     },
     heroLead: {
-      de: "ICON entwickelt und realisiert Containerlösungen für Industrie, Kommunen, Baustellen, Unterbringung und technische Infrastruktur. Die Seite ist bewusst nach Sortiment, Nutzungsart und technischer Planung aufgebaut.",
+      de: "ICON entwickelt und realisiert Containerlösungen für Industrie, Kommunen, Baustellen, Unterbringung und technische Infrastruktur.",
       en: "ICON develops and delivers container solutions for industry, municipalities, construction sites, accommodation and technical infrastructure.",
     },
     blocksDe: [
@@ -50,14 +58,15 @@ export const leistungen: Leistung[] = [
         type: "columns",
         heading: "Sortiment nach Containertyp",
         intro:
-          "Die Unterkategorien orientieren sich an der Art, wie Kunden tatsächlich suchen: Büro, Wohnen, Sanitär, Schule, Baustelle, Technik, Lager, Zutritt, Erste Hilfe, Schutz und komplette Anlagen.",
+          "Die Unterkategorien orientieren sich an der Art, wie Kunden tatsächlich suchen: Bürocontainer, Wohnen, Sanitär, Schule, Baustelle, Technik, Lager, Zutritt, Erste Hilfe, Schutz und komplette Anlagen.",
         columns: [
           {
             heading: "",
             items: [
               "Bürocontainer",
               "Wohn- und Unterkunftscontainer",
-              "Sanitärcontainer",
+              "Duschcontainer",
+              "WC Container",
               "Schulcontainer und Bildungsgebäude",
               "Baustellencontainer",
               "Aufenthalts- und Sozialräume",
@@ -113,7 +122,7 @@ export const leistungen: Leistung[] = [
               "Kita- und Betreuungsgebäude",
               "Büro- und Verwaltungsgebäude",
               "Unterkunfts- und Wohnanlagen",
-              "Interim-Gebäude während Sanierung oder Erweiterung",
+              "Interim-Gebäude über 24 Monate",
             ],
           },
           {
@@ -135,6 +144,12 @@ export const leistungen: Leistung[] = [
     slugDe: "stahlbau-hallenbau",
     slugEn: "steel-construction",
     heroImage: "stahlbau-hallen-hero.jpeg",
+    gallery: [
+      { file: "stahlbau-hallenmontage-kran.jpg", caption: "Hallenmontage, Stahlskelett mit Mobilkran" },
+      { file: "stahlbau-stuetzenmontage.jpg", caption: "Stützenmontage im Rohbau" },
+      { file: "stahlbau-rahmenmontage-daemmerung.jpg", caption: "Rahmenmontage in der Abenddämmerung" },
+      { file: "stahlbau-schweissarbeiten.jpg", caption: "Schweißarbeiten an der Stahlkonstruktion" },
+    ],
     name: { de: "Stahlbau & Hallen", en: "Steel Construction & Halls" },
     homeCardText: {
       de: "Tragwerke, Hallen, Bühnen, Unterkonstruktionen und Sonderstahlbau für robuste Infrastruktur.",
@@ -162,6 +177,17 @@ export const leistungen: Leistung[] = [
         ],
       },
       {
+        type: "list",
+        heading: "Hallentypen aus einer Hand",
+        items: [
+          "Industrie- und Gewerbehallen",
+          "Ausstellungshallen",
+          "Lagerhallen",
+          "Überdachungen und Carports",
+          "Dachkonstruktionen",
+        ],
+      },
+      {
         type: "cards",
         cards: [
           {
@@ -176,6 +202,10 @@ export const leistungen: Leistung[] = [
             title: "Schnittstellen zu Container- und Modulbau",
             text: "Stahlbau kann Containeranlagen und Modulgebäude vorbereiten, tragen, erschließen oder technisch ergänzen.",
           },
+          {
+            title: "Tiefbau als Fundament",
+            text: "Baugrubenaushub, Bodenaustausch, Regen- und Abwasserkanäle sowie Ver- und Entsorgungsleitungen werden im eigenen Team geplant und ausgeführt — auch bei schwierigem Untergrund oder beengten Baufeldern.",
+          },
         ],
       },
       {
@@ -186,6 +216,14 @@ export const leistungen: Leistung[] = [
           { label: "Anschlussdetails", text: "Schraub- und Schweißverbindungen, Auflager, Fundamentanschlüsse, Fassadenübergänge und Schnittstellen zu Technik oder Modulbau werden sauber definiert." },
           { label: "Fertigung & Beschichtung", text: "Werkstattplanung, Toleranzen, Korrosionsschutz, Oberflächenanforderungen und Transportgrößen beeinflussen Qualität und Wirtschaftlichkeit." },
           { label: "Montage & Dokumentation", text: "Kranstellung, Hebevorgänge, Arbeitssicherheit, Baustellenlogistik und Übergabeunterlagen werden früh mitgedacht." },
+          { label: "Planung für Sonderbauten", text: "Neben klassischen Hallen erstellen unsere technischen Zeichner auch Ausführungspläne für gehärtete Bauwerke und militärische Unterkünfte, eng abgestimmt mit dem Bereich Militärische Infrastruktur." },
+        ],
+      },
+      {
+        type: "paragraphs",
+        heading: "Eigenes Montageteam statt Fremdvergabe.",
+        text: [
+          "Ein Mix aus erfahrenen Supervisoren, Monteuren und motiviertem Nachwuchs montiert unsere Stahlbauten nahezu ausschließlich selbst. Sicherheit und eine mit Konstruktion und Fertigung eng abgestimmte Montageplanung stehen dabei an erster Stelle — als Gesamtpaket aus Konstruktion, Fertigung und Montage.",
         ],
       },
       {
@@ -206,14 +244,21 @@ export const leistungen: Leistung[] = [
     slugDe: "militaerische-infrastruktur",
     slugEn: "defense-infrastructure",
     heroImage: "militaerische-infrastruktur-hero.png",
+    gallery: [
+      { file: "schutzanlage-luftaufnahme.jpg", caption: "Luftaufnahme einer gehärteten Anlage mit Schutzwällen" },
+      { file: "schutzanlage-schutzwall-technik.jpg", caption: "Schutzwall mit Klima- und Lüftungstechnik" },
+      { file: "schutzanlage-abenddaemmerung.jpg", caption: "Gehärtete Anlage in der Abenddämmerung" },
+      { file: "einsatzstandort-gebaeude.jpg", caption: "Fertiggestelltes Gebäude auf einem Einsatzstandort" },
+    ],
+    ballisticUnit: BALLISTIC_UNIT,
     name: { de: "Militärische Infrastruktur", en: "Defense Infrastructure" },
     homeCardText: {
-      de: "Gehärtete Unterkünfte, Schutz- und Technikcontainer, Versorgung, Montage und vertrauliche Projektabwicklung.",
-      en: "Hardened accommodation, protective and technical containers, logistics, installation and confidential project handling.",
+      de: "ICON Schutzcontainer (STANAG 2280, Bedrohungsstufen A3/C4, TNO-zertifiziert), gehärtete Unterkünfte, Schutz- und Technikcontainer, Montage und vertrauliche Projektabwicklung.",
+      en: "ICON Ballistic Unit (STANAG 2280, threat levels A3/C4, TNO-certified), hardened accommodation, protective and technical containers, installation and confidential project handling.",
     },
     heroLead: {
-      de: "Sicherheitsrelevante Infrastruktur entsteht selten aus einem einzelnen Produkt. Meist geht es um das Zusammenspiel aus Nutzung, Raumlösung, technischer Ausstattung, Standort, Montage und nachvollziehbarer Dokumentation.",
-      en: "Security-relevant infrastructure rarely comes from a single product — it's the interplay of use, spatial solution, technical fit-out, site and documentation.",
+      de: "Mit dem ICON Schutzcontainer bietet ICON eine nach STANAG 2280 zertifizierte, beschusshemmende Raumlösung für Unterkunft, Büro, Sanitär und Technik. Darüber hinaus entsteht sicherheitsrelevante Infrastruktur selten aus einem einzelnen Produkt — meist geht es um das Zusammenspiel aus Nutzung, Raumlösung, technischer Ausstattung, Standort, Montage und nachvollziehbarer Dokumentation.",
+      en: "With the ICON Ballistic Unit, ICON offers a STANAG 2280-certified, ballistic-resistant room solution for accommodation, office, sanitary and technical use. Beyond that, security-relevant infrastructure rarely comes from a single product — it's the interplay of use, spatial solution, technical fit-out, site and documentation.",
     },
     blocksDe: [
       {

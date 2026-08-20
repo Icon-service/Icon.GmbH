@@ -1,6 +1,8 @@
 ---
 import Layout from "../../layouts/Layout.astro";
+import PageHero from "../../components/PageHero.astro";
 import { useTranslations, localizedPath } from "../../i18n/utils";
+import { getImage } from "../../lib/images";
 
 const lang = "en" as const;
 const t = useTranslations(lang);
@@ -31,15 +33,15 @@ const values = [
   altPath="/ueber-uns"
 >
   <section class="border-b border-line">
-    <div class="mx-auto max-w-(--container-wide) px-6 py-16">
-      <p class="icon-topline">{t("hero.eyebrow")}</p>
-      <h1 class="mt-3 text-4xl sm:text-5xl">{t("about.title")}</h1>
-      <p class="mt-4 max-w-2xl text-lg text-steel">
-        ICON plans, delivers and coordinates container solutions, modular buildings, steel and
-        hall projects, and security-relevant infrastructure — for sites that need to move fast,
-        hold up, and stay well documented.
-      </p>
-    </div>
+    <PageHero
+      eyebrow={t("hero.eyebrow")}
+      title={t("about.title")}
+      lead="ICON plans, delivers and coordinates container solutions, modular buildings, steel and hall projects, and security-relevant infrastructure — for sites that need to move fast, hold up, and stay well documented."
+      image={getImage("stahlbau-schweissarbeiten.jpg")}
+      imageAlt="Welding work on an ICON steel structure"
+      imageCaption="ICON GmbH · Fabrication"
+      priority
+    />
   </section>
 
   <section class="mx-auto max-w-(--container-wide) px-6 py-16">

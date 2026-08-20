@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import ContactForm from "../components/ContactForm.astro";
+import PageHero from "../components/PageHero.astro";
 import { useTranslations } from "../i18n/utils";
 
 const lang = "de" as const;
@@ -13,11 +14,7 @@ const t = useTranslations(lang);
   altPath="/en/contact"
 >
   <section class="border-b border-line">
-    <div class="mx-auto max-w-(--container-wide) px-6 py-16">
-      <p class="icon-topline">{t("hero.eyebrow")}</p>
-      <h1 class="mt-3 text-4xl sm:text-5xl">{t("contact.title")}</h1>
-      <p class="mt-4 max-w-xl text-lg text-steel">{t("contact.lead")}</p>
-    </div>
+    <PageHero eyebrow={t("hero.eyebrow")} title={t("contact.title")} lead={t("contact.lead")} />
   </section>
 
   <section class="mx-auto max-w-(--container-wide) px-6 py-16">

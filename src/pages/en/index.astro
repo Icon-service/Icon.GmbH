@@ -1,6 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import Layout from "../../layouts/Layout.astro";
+import PageHero from "../../components/PageHero.astro";
 import PlaceholderFrame from "../../components/PlaceholderFrame.astro";
 import { leistungen } from "../../data/leistungen";
 import { localizedPath } from "../../i18n/utils";
@@ -28,29 +29,21 @@ const process = [
   altPath="/"
 >
   <section class="border-b border-line">
-    <div class="mx-auto grid max-w-(--container-wide) gap-10 px-6 py-16 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:py-24">
-      <div>
-        <p class="icon-topline">{"ICON GmbH | Container Construction, Modular Building, Steel & Infrastructure"}</p>
-        <h1 class="mt-4 text-[clamp(2.35rem,6vw,4.2rem)]">Modular buildings and robust infrastructure from a single source</h1>
-        <p class="mt-5 max-w-xl text-lg text-steel">
-          ICON plans, delivers and coordinates container solutions, modular buildings, steel and
-          hall projects, and security-relevant infrastructure — for sites that need to move fast,
-          hold up, and stay well documented.
-        </p>
-        <div class="mt-8 flex flex-wrap gap-4">
-          <a href={localizedPath("contact", lang)} class="btn-primary">Request a project</a>
-          <a href={localizedPath("services", lang)} class="btn-outline text-ink">View services</a>
-        </div>
+    <PageHero
+      eyebrow="ICON GmbH | Container Construction, Modular Building, Steel & Infrastructure"
+      title="Modular buildings and robust infrastructure from a single source"
+      titleClass="text-[clamp(2.35rem,6vw,4.2rem)]"
+      lead="ICON plans, delivers and coordinates container solutions, modular buildings, steel and hall projects, and security-relevant infrastructure — for sites that need to move fast, hold up, and stay well documented."
+      image={getImage("hero-modular-campus.png")}
+      imageAlt="ICON modular building, exterior"
+      imageCaption="ICON GmbH · Modular Building"
+      priority
+    >
+      <div class="flex flex-wrap gap-4">
+        <a href={localizedPath("contact", lang)} class="btn-primary">Request a project</a>
+        <a href={localizedPath("services", lang)} class="btn-outline text-ink">View services</a>
       </div>
-      <Image
-        src={getImage("hero-modular-campus.png")}
-        alt="ICON modular building, exterior"
-        class="aspect-4/3 w-full rounded object-cover"
-        widths={[480, 768, 1024]}
-        sizes="(min-width: 1024px) 40vw, 100vw"
-        priority
-      />
-    </div>
+    </PageHero>
 
     <div class="border-t border-line">
       <div class="mx-auto grid max-w-(--container-wide) gap-8 px-6 py-10 sm:grid-cols-3">
@@ -79,7 +72,7 @@ const process = [
             <Image
               src={getImage(l.cardImage ?? l.heroImage!)}
               alt={l.name[lang]}
-              class="mb-4 aspect-4/3 w-full rounded object-cover"
+              class="mb-4 aspect-4/3 w-full rounded-lg object-cover"
               widths={[320, 480]}
               sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
             />
@@ -102,7 +95,7 @@ const process = [
       <Image
         src={getImage("modulbau-konzeptbau.png")}
         alt="Modular construction, concept diagram"
-        class="aspect-4/3 w-full rounded object-cover"
+        class="aspect-4/3 w-full rounded-xl object-cover shadow-lg shadow-ink/10 ring-1 ring-ink/5"
         widths={[480, 768, 1024]}
         sizes="(min-width: 1024px) 40vw, 100vw"
       />
@@ -150,7 +143,7 @@ const process = [
         <Image
           src={getImage("militaerische-infrastruktur-hero.png")}
           alt="Security-relevant infrastructure, exterior"
-          class="aspect-4/3 w-full rounded object-cover"
+          class="aspect-4/3 w-full rounded-xl object-cover shadow-lg shadow-ink/10 ring-1 ring-ink/5"
           widths={[480, 768, 1024]}
           sizes="(min-width: 1024px) 40vw, 100vw"
         />

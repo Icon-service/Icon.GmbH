@@ -1,6 +1,8 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import PageHero from "../components/PageHero.astro";
 import { useTranslations, localizedPath } from "../i18n/utils";
+import { getImage } from "../lib/images";
 
 const lang = "de" as const;
 const t = useTranslations(lang);
@@ -31,15 +33,15 @@ const values = [
   altPath="/en/about"
 >
   <section class="border-b border-line">
-    <div class="mx-auto max-w-(--container-wide) px-6 py-16">
-      <p class="icon-topline">{t("hero.eyebrow")}</p>
-      <h1 class="mt-3 text-4xl sm:text-5xl">{t("about.title")}</h1>
-      <p class="mt-4 max-w-2xl text-lg text-steel">
-        ICON plant, liefert und koordiniert Containerlösungen, modulare Gebäude, Stahlbau- und
-        Hallenprojekte sowie sicherheitsrelevante Infrastruktur — für Standorte, die schnell,
-        belastbar und sauber dokumentiert umgesetzt werden müssen.
-      </p>
-    </div>
+    <PageHero
+      eyebrow={t("hero.eyebrow")}
+      title={t("about.title")}
+      lead="ICON plant, liefert und koordiniert Containerlösungen, modulare Gebäude, Stahlbau- und Hallenprojekte sowie sicherheitsrelevante Infrastruktur — für Standorte, die schnell, belastbar und sauber dokumentiert umgesetzt werden müssen."
+      image={getImage("stahlbau-schweissarbeiten.jpg")}
+      imageAlt="Schweißarbeiten an einer Stahlkonstruktion von ICON"
+      imageCaption="ICON GmbH · Fertigung"
+      priority
+    />
   </section>
 
   <section class="mx-auto max-w-(--container-wide) px-6 py-16">

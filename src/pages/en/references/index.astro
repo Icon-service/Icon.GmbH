@@ -1,29 +1,91 @@
 ---
+import { Image, getImage as getAstroImage } from "astro:assets";
 import Layout from "../../../layouts/Layout.astro";
+import PageHero from "../../../components/PageHero.astro";
+import Lightbox from "../../../components/Lightbox.astro";
+import { REFERENZEN } from "../../../data/referenzen";
 import { useTranslations, localizedPath } from "../../../i18n/utils";
+import { getImage } from "../../../lib/images";
 
 const lang = "en" as const;
 const t = useTranslations(lang);
+
+const groupsWithFull = await Promise.all(
+  REFERENZEN.map(async (group) => {
+    const images = await Promise.all(
+      group.images.map(async (img) => {
+        const full = await getAstroImage({ src: getImage(img.file), width: 1920 });
+        return { ...img, fullSrc: full.src };
+      })
+    );
+    return { ...group, images };
+  })
+);
 ---
 
 <Layout
   title={t("references.title")}
-  description="Reference projects by ICON GmbH."
+  description="Real ICON GmbH projects: hardened accommodation and utility buildings, camp infrastructure and steel hall construction in West Africa, the Middle East and the Baltics."
   altPath="/referenzen"
 >
   <section class="border-b border-line">
-    <div class="mx-auto max-w-(--container-wide) px-6 py-16">
-      <p class="icon-topline">{t("hero.eyebrow")}</p>
-      <h1 class="mt-3 text-4xl sm:text-5xl">{t("references.title")}</h1>
-      <p class="mt-4 max-w-xl text-lg text-steel">{t("references.lead")}</p>
-    </div>
+    <PageHero
+      eyebrow={t("hero.eyebrow")}
+      title={t("references.title")}
+      lead={t("references.lead")}
+      image={getImage("projekte-hero-icon.png")}
+      imageAlt="Container facility in operation, exterior"
+      imageCaption="ICON GmbH · Project Deployment"
+      priority
+    />
   </section>
 
-  <section class="mx-auto max-w-(--container-wide) px-6 py-20">
-    <div class="card mx-auto max-w-lg bg-mist p-8 text-center">
-      <h2 class="text-2xl text-ink">{t("references.empty.title")}</h2>
-      <p class="mt-3 text-steel">{t("references.empty.text")}</p>
+  <section class="mx-auto max-w-(--container-wide) px-6 py-16">
+    <div class="max-w-2xl">
+      <p class="text-steel">
+        Out of consideration for clients and sites, projects are shown here without client names
+        or exact locations — the photos below are from real completed projects. Click a photo to
+        view it larger.
+      </p>
+    </div>
+
+    <div class="mt-12 space-y-16">
+      {groupsWithFull.map((group) => (
+        <div>
+          <p class="icon-topline">{group.region[lang]}</p>
+          <h2 class="mt-1.5 text-2xl text-ink sm:text-3xl">{group.title[lang]}</h2>
+          <p class="mt-3 max-w-2xl text-steel">{group.text[lang]}</p>
+          <div class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+            {group.images.map((img, i) => (
+              <button
+                type="button"
+                class="lightbox-trigger block text-left"
+                data-group={group.id}
+                data-index={i}
+                data-full={img.fullSrc}
+                data-caption={img.caption[lang]}
+              >
+                <Image
+                  src={getImage(img.file)}
+                  alt={img.caption[lang]}
+                  class="aspect-4/3 w-full rounded-lg object-cover ring-1 ring-ink/5 transition-opacity hover:opacity-80"
+                  widths={[240, 360]}
+                  sizes="(min-width: 1024px) 20vw, (min-width: 640px) 33vw, 50vw"
+                  loading="lazy"
+                />
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="card mt-16 bg-mist p-6 text-center sm:p-8">
+      <p class="text-lg text-ink">More projects available on request</p>
+      <p class="mt-2 text-steel">For details on location, scope or references, feel free to contact us directly.</p>
       <a href={localizedPath("contact", lang)} class="btn-primary mt-6 inline-block">{t("nav.cta")}</a>
     </div>
   </section>
+
+  <Lightbox />
 </Layout>

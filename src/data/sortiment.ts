@@ -88,8 +88,8 @@ function baseConstructionSections(): SpecSection[] {
       heading: "Dach",
       rows: [
         { label: "Rahmenkonstruktion", value: "Kaltgewalzte Stahlprofile, 3 mm, verschweißt; Containerecken nach ISO-Norm" },
-        { label: "Dachdeckung", value: "Verzinktes, beschichtetes Stahlblech, 0,55 mm, umlaufender Doppelfalz" },
-        { label: "Isolierung", value: "Mineralwolle 100 mm, Brandklasse A1 (nicht brennbar)" },
+        { label: "Dachdeckung", value: "Verzinktes, beschichtetes Stahlblech, 0,6 mm, umlaufender Doppelfalz" },
+        { label: "Isolierung", value: "Mineralwolle 100 mm - 140 mm, Brandklasse A1 (nicht brennbar)" },
         { label: "Wärmedämmung", value: "U-Wert ca. 0,36 W/m²K" },
         { label: "Farbe innen", value: "RAL 9002 Grauweiß" },
       ],
@@ -99,9 +99,10 @@ function baseConstructionSections(): SpecSection[] {
       rows: [
         { label: "Rahmenkonstruktion", value: "Kaltgewalzte Stahlprofile, 3 mm, verschweißt" },
         { label: "Gabelstaplertaschen", value: "Optional, Achsabstand 1.200 mm" },
-        { label: "Unterboden", value: "Verzinktes, beschichtetes Blech, 0,75 mm" },
+        { label: "Unterboden", value: "Verzinktes Blech, 0,6 mm" },
+	{ label: "Dämmung", value: "Steinwolle WLG 035, 100mm" },
         { label: "Fußboden", value: "Zementgebundene Spanplatte, 21 mm, wasserabweisend, formaldehydfrei" },
-        { label: "Bodenbelag", value: "Homogener PVC-Belag, 1,5 mm, Rutschfestigkeitsklasse R9" },
+        { label: "Bodenbelag", value: "Homogener PVC-Belag, 2 mm, Rutschfestigkeitsklasse R10" },
         { label: "Wärmedämmung", value: "U-Wert ca. 0,34 W/m²K" },
       ],
     },

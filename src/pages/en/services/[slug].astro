@@ -1,6 +1,6 @@
 ---
-import { Image } from "astro:assets";
 import Layout from "../../../layouts/Layout.astro";
+import PageHero from "../../../components/PageHero.astro";
 import { leistungen } from "../../../data/leistungen";
 import { useTranslations, localizedPath } from "../../../i18n/utils";
 import { getImage } from "../../../lib/images";
@@ -23,22 +23,17 @@ const { leistung } = Astro.props;
   altPath={`/leistungen/${leistung.slugDe}`}
 >
   <section class="border-b border-line">
-    <div class="mx-auto max-w-(--container-wide) px-6 py-16">
-      <a href={localizedPath("services", lang)} class="text-sm font-semibold text-steel hover:text-signal">
-        ← {t("services.overview.title")}
-      </a>
-      <h1 class="mt-3 text-4xl sm:text-5xl">{leistung.name[lang]}</h1>
-      <p class="mt-4 max-w-2xl text-lg text-steel">{leistung.heroLead[lang]}</p>
-    </div>
-    {leistung.heroImage && (
-      <Image
-        src={getImage(leistung.heroImage)}
-        alt={leistung.name[lang]}
-        class="mx-auto max-h-[28rem] w-full max-w-(--container-wide) rounded object-cover px-6"
-        widths={[640, 1024, 1600]}
-        sizes="(min-width: 1360px) 1360px, 100vw"
-      />
-    )}
+    <PageHero
+      eyebrow={t("hero.eyebrow")}
+      title={leistung.name[lang]}
+      lead={leistung.heroLead[lang]}
+      image={leistung.heroImage ? getImage(leistung.heroImage) : undefined}
+      imageAlt={leistung.name[lang]}
+      imageCaption={`ICON GmbH · ${leistung.name[lang]}`}
+      backHref={localizedPath("services", lang)}
+      backLabel={t("services.overview.title")}
+      priority
+    />
   </section>
 
   <section class="mx-auto max-w-(--container-wide) px-6 py-16">

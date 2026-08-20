@@ -1,0 +1,34 @@
+---
+import Layout from "../layouts/Layout.astro";
+import PageHero from "../components/PageHero.astro";
+import GrundrissPlaner from "../components/GrundrissPlaner.astro";
+import { useTranslations, localizedPath } from "../i18n/utils";
+import { getImage } from "../lib/images";
+
+const lang = "de" as const;
+const t = useTranslations(lang);
+---
+
+<Layout
+  title="Grundrissplaner"
+  description="Container in Standardgrößen selbst anordnen und einen ersten Grundriss-Entwurf direkt an ICON senden."
+  altPath="/"
+>
+  <section class="border-b border-line">
+    <PageHero
+      eyebrow={t("hero.eyebrow")}
+      title="Grundrissplaner"
+      lead="Ordnen Sie unsere Container in Standardgrößen selbst auf einem Raster an und senden Sie Ihren Entwurf direkt als Skizze mit Ihrer Anfrage — als erste Orientierung, nicht als verbindliche Planung."
+      image={getImage("planning-floorplan.png")}
+      imageAlt="Grundriss- und Konstruktionsplanung, technische Zeichnung"
+      imageCaption="ICON GmbH · Planung"
+      backHref={localizedPath("sortiment", lang)}
+      backLabel={t("sortiment.overview.title")}
+      priority
+    />
+  </section>
+
+  <section class="mx-auto max-w-(--container-wide) px-6 py-16">
+    <GrundrissPlaner lang={lang} />
+  </section>
+</Layout>
