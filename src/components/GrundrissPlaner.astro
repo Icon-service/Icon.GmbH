@@ -26,7 +26,7 @@ const status = {
 ---
 
 <div class="grid gap-8 lg:grid-cols-[300px_1fr]">
-  <!-- Palette / Eigenschaften -->
+  <!-- Eigenschaften -->
   <div class="space-y-5">
     <div class="card p-4">
       <p class="text-xs font-bold uppercase tracking-wider text-steel">
@@ -49,16 +49,10 @@ const status = {
       </div>
     </div>
 
-    <div class="card p-4">
-      <p class="text-xs font-bold uppercase tracking-wider text-steel">{lang === "de" ? "Bauteile" : "Building elements"}</p>
-      <div class="mt-3 grid grid-cols-2 gap-2">
-        <button type="button" class="planner-tool btn-outline px-3 py-2 text-sm text-ink" data-tool="select">{lang === "de" ? "Auswahl" : "Select"}</button>
-        <button type="button" class="planner-tool btn-outline px-3 py-2 text-sm text-ink" data-tool="wall">{lang === "de" ? "Trennwand" : "Partition"}</button>
-        <button type="button" class="planner-tool btn-outline px-3 py-2 text-sm text-ink" data-tool="door">{lang === "de" ? "Tür an Wand" : "Door on wall"}</button>
-        <button type="button" class="planner-tool btn-outline px-3 py-2 text-sm text-ink" data-tool="window">{lang === "de" ? "Fenster an Wand" : "Window on wall"}</button>
-        <button type="button" class="planner-tool btn-outline px-3 py-2 text-sm text-ink" data-tool="stair">{lang === "de" ? "Außentreppe" : "External stair"}</button>
-      </div>
-      <p class="mt-3 text-xs text-steel">{lang === "de" ? "Tür/Fenster direkt auf eine Containerwand klicken. Zwischen benachbarten Modulen bleiben sichtbar 15 mm Montageabstand. Navigation: Mausrad = Zoom, mittlere Maustaste gedrückt halten und ziehen = Plan verschieben. Shift + Klick = mehrere Module auswählen." : "Click doors/windows directly onto a container wall. Navigation: mouse wheel = zoom, hold the middle mouse button and drag = pan. Shift + click = multi-select modules."}</p>
+    <div class="card bg-mist p-4 text-xs text-steel">
+      {lang === "de"
+        ? "Rechtsklick auf die freie Fläche: Trennwand, Tür, Fenster oder Treppe hinzufügen (Esc bricht ab). Rechtsklick auf einen Container: drehen, gruppieren oder löschen. Rechtsklick auf eine platzierte Tür/Fenster/Trennwand: Ausführung ändern oder löschen — bei mehreren gleichzeitig ausgewählten (Shift + Klick) gilt die Änderung für alle. Navigation: Mausrad = Zoom, mittlere Maustaste gedrückt halten und ziehen = Plan verschieben."
+        : "Right-click the empty canvas to add a partition, door, window or stair (Esc cancels). Right-click a container to rotate, group or delete it. Right-click a placed door/window/partition to change its options or delete it — with several selected at once (Shift + click), the change applies to all of them. Navigation: mouse wheel = zoom, hold the middle mouse button and drag = pan."}
     </div>
 
     <div class="card p-4">
@@ -212,8 +206,8 @@ const status = {
       <span>{lang === "de" ? "Netto innen:" : "Net internal:"} <strong id="planner-total-net" class="text-ink">0.00 m²</strong></span>
     </div>
 
-    <div class="mt-4 overflow-hidden rounded border border-line">
-      <svg id="planner-svg" viewBox={`0 0 ${WORLD_W} ${WORLD_H}`} class="block w-full touch-none select-none bg-mist" style="aspect-ratio: 3 / 2">
+    <div class="mt-4 overflow-hidden rounded border border-line" style="overscroll-behavior: contain;">
+      <svg id="planner-svg" viewBox={`0 0 ${WORLD_W} ${WORLD_H}`} class="block w-full touch-none select-none bg-mist" style="aspect-ratio: 3 / 2; overscroll-behavior: contain;">
         <defs>
           <pattern id="planner-grid" width="1" height="1" patternUnits="userSpaceOnUse"><path d="M 1 0 L 0 0 0 1" fill="none" stroke="#dde2e5" stroke-width="0.02"></path></pattern>
           <marker id="dim-arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#5f666b"></path></marker>
@@ -226,6 +220,116 @@ const status = {
     </div>
     <p class="mt-2 text-xs text-steel">{lang === "de" ? "1 Kästchen = 1 m · Mausrad = Zoom · Mittlere Maustaste + Ziehen = Verschieben · Module rasten mit 15 mm sichtbarem Abstand zueinander ein · Shift + Klick = Mehrfachauswahl." : "1 square = 1 m · Mouse wheel = zoom · Middle mouse + drag = pan · Modules snap together with a 15 mm installation joint · Shift + click = multi-select."}</p>
   </div>
+</div>
+
+<!-- Rechtsklick-Menü: freie Fläche -->
+<div id="planner-menu-empty" class="planner-ctx-menu card hidden fixed z-50 w-52 bg-paper p-1.5 shadow-xl">
+  <p class="px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-steel">{lang === "de" ? "Bauteil hinzufügen" : "Add element"}</p>
+  <ul>
+    <li><button type="button" class="planner-ctx-tool w-full rounded px-3 py-2 text-left text-sm text-ink hover:bg-mist" data-tool="wall">{lang === "de" ? "Trennwand zeichnen" : "Draw partition"}</button></li>
+    <li><button type="button" class="planner-ctx-tool w-full rounded px-3 py-2 text-left text-sm text-ink hover:bg-mist" data-tool="door">{lang === "de" ? "Tür setzen" : "Place door"}</button></li>
+    <li><button type="button" class="planner-ctx-tool w-full rounded px-3 py-2 text-left text-sm text-ink hover:bg-mist" data-tool="window">{lang === "de" ? "Fenster setzen" : "Place window"}</button></li>
+    <li><button type="button" class="planner-ctx-tool w-full rounded px-3 py-2 text-left text-sm text-ink hover:bg-mist" data-tool="stair">{lang === "de" ? "Außentreppe setzen" : "Place external stair"}</button></li>
+  </ul>
+</div>
+
+<!-- Rechtsklick-Menü: Container -->
+<div id="planner-menu-container" class="planner-ctx-menu card hidden fixed z-50 w-48 bg-paper p-1.5 shadow-xl">
+  <ul>
+    <li><button type="button" id="planner-ctx-rotate" class="w-full rounded px-3 py-2 text-left text-sm text-ink hover:bg-mist">{lang === "de" ? "Drehen" : "Rotate"}</button></li>
+    <li><button type="button" id="planner-ctx-group" class="w-full rounded px-3 py-2 text-left text-sm text-ink hover:bg-mist">{lang === "de" ? "Gruppieren" : "Group"}</button></li>
+    <li><button type="button" id="planner-ctx-ungroup" class="w-full rounded px-3 py-2 text-left text-sm text-ink hover:bg-mist">{lang === "de" ? "Gruppe lösen" : "Ungroup"}</button></li>
+    <li><div class="my-1.5 border-t border-line"></div></li>
+    <li><button type="button" id="planner-ctx-delete" class="w-full rounded px-3 py-2 text-left text-sm text-signal hover:bg-mist">{lang === "de" ? "Löschen" : "Delete"}</button></li>
+  </ul>
+</div>
+
+<!-- Rechtsklick-Menü: Fenster -->
+<div id="planner-menu-window" class="planner-ctx-menu card hidden fixed z-50 w-56 bg-paper p-1.5 shadow-xl">
+  <p id="planner-menu-window-count" class="hidden px-3 py-1.5 text-xs font-semibold text-steel"></p>
+  <ul>
+    <li class="group relative">
+      <div class="flex cursor-default items-center justify-between rounded px-3 py-2 text-sm text-ink hover:bg-mist"><span>{lang === "de" ? "Fenstertyp" : "Window type"}</span><span class="text-steel">&rsaquo;</span></div>
+      <ul class="absolute left-full top-0 hidden w-32 rounded border border-line bg-paper p-1.5 shadow-xl group-hover:block">
+        <li><button type="button" class="planner-ctx-window-type w-full rounded px-3 py-1.5 text-left text-sm text-ink hover:bg-mist" data-value="single">{lang === "de" ? "Einfach" : "Single"}</button></li>
+        <li><button type="button" class="planner-ctx-window-type w-full rounded px-3 py-1.5 text-left text-sm text-ink hover:bg-mist" data-value="double">{lang === "de" ? "Doppelt" : "Double"}</button></li>
+      </ul>
+    </li>
+    <li class="group relative">
+      <div class="flex cursor-default items-center justify-between rounded px-3 py-2 text-sm text-ink hover:bg-mist"><span>{lang === "de" ? "Rollladen" : "Roller shutter"}</span><span class="text-steel">&rsaquo;</span></div>
+      <ul class="absolute left-full top-0 hidden w-32 rounded border border-line bg-paper p-1.5 shadow-xl group-hover:block">
+        <li><button type="button" class="planner-ctx-window-shutter w-full rounded px-3 py-1.5 text-left text-sm text-ink hover:bg-mist" data-value="none">{lang === "de" ? "Ohne" : "Without"}</button></li>
+        <li><button type="button" class="planner-ctx-window-shutter w-full rounded px-3 py-1.5 text-left text-sm text-ink hover:bg-mist" data-value="roller">{lang === "de" ? "Mit" : "With"}</button></li>
+      </ul>
+    </li>
+    <li class="group relative">
+      <div class="flex cursor-default items-center justify-between rounded px-3 py-2 text-sm text-ink hover:bg-mist"><span>{lang === "de" ? "Breite" : "Width"}</span><span class="text-steel">&rsaquo;</span></div>
+      <ul class="absolute left-full top-0 hidden w-24 rounded border border-line bg-paper p-1.5 shadow-xl group-hover:block">
+        {[0.6, 0.9, 1.2, 1.5, 1.8].map((w) => (
+          <li><button type="button" class="planner-ctx-window-width w-full rounded px-3 py-1.5 text-left text-sm text-ink hover:bg-mist" data-value={w}>{w.toFixed(1)} m</button></li>
+        ))}
+      </ul>
+    </li>
+    <li><div class="my-1.5 border-t border-line"></div></li>
+    <li><button type="button" id="planner-ctx-window-delete" class="w-full rounded px-3 py-2 text-left text-sm text-signal hover:bg-mist">{lang === "de" ? "Löschen" : "Delete"}</button></li>
+  </ul>
+</div>
+
+<!-- Rechtsklick-Menü: Tür -->
+<div id="planner-menu-door" class="planner-ctx-menu card hidden fixed z-50 w-56 bg-paper p-1.5 shadow-xl">
+  <p id="planner-menu-door-count" class="hidden px-3 py-1.5 text-xs font-semibold text-steel"></p>
+  <ul>
+    <li class="group relative">
+      <div class="flex cursor-default items-center justify-between rounded px-3 py-2 text-sm text-ink hover:bg-mist"><span>{lang === "de" ? "Öffnungsrichtung" : "Swing direction"}</span><span class="text-steel">&rsaquo;</span></div>
+      <ul class="absolute left-full top-0 hidden w-32 rounded border border-line bg-paper p-1.5 shadow-xl group-hover:block">
+        <li><button type="button" class="planner-ctx-door-swing w-full rounded px-3 py-1.5 text-left text-sm text-ink hover:bg-mist" data-value="inside">{lang === "de" ? "Nach innen" : "Inward"}</button></li>
+        <li><button type="button" class="planner-ctx-door-swing w-full rounded px-3 py-1.5 text-left text-sm text-ink hover:bg-mist" data-value="outside">{lang === "de" ? "Nach außen" : "Outward"}</button></li>
+      </ul>
+    </li>
+    <li class="group relative">
+      <div class="flex cursor-default items-center justify-between rounded px-3 py-2 text-sm text-ink hover:bg-mist"><span>{lang === "de" ? "Anschlag" : "Hinge side"}</span><span class="text-steel">&rsaquo;</span></div>
+      <ul class="absolute left-full top-0 hidden w-28 rounded border border-line bg-paper p-1.5 shadow-xl group-hover:block">
+        <li><button type="button" class="planner-ctx-door-hinge w-full rounded px-3 py-1.5 text-left text-sm text-ink hover:bg-mist" data-value="left">{lang === "de" ? "Links" : "Left"}</button></li>
+        <li><button type="button" class="planner-ctx-door-hinge w-full rounded px-3 py-1.5 text-left text-sm text-ink hover:bg-mist" data-value="right">{lang === "de" ? "Rechts" : "Right"}</button></li>
+      </ul>
+    </li>
+    <li class="group relative">
+      <div class="flex cursor-default items-center justify-between rounded px-3 py-2 text-sm text-ink hover:bg-mist"><span>{lang === "de" ? "Breite" : "Width"}</span><span class="text-steel">&rsaquo;</span></div>
+      <ul class="absolute left-full top-0 hidden w-24 rounded border border-line bg-paper p-1.5 shadow-xl group-hover:block">
+        {[0.8, 0.9, 1.0, 1.25, 1.5].map((w) => (
+          <li><button type="button" class="planner-ctx-door-width w-full rounded px-3 py-1.5 text-left text-sm text-ink hover:bg-mist" data-value={w}>{w.toFixed(2)} m</button></li>
+        ))}
+      </ul>
+    </li>
+    <li><div class="my-1.5 border-t border-line"></div></li>
+    <li><button type="button" id="planner-ctx-door-delete" class="w-full rounded px-3 py-2 text-left text-sm text-signal hover:bg-mist">{lang === "de" ? "Löschen" : "Delete"}</button></li>
+  </ul>
+</div>
+
+<!-- Rechtsklick-Menü: Trennwand -->
+<div id="planner-menu-wall" class="planner-ctx-menu card hidden fixed z-50 w-56 bg-paper p-1.5 shadow-xl">
+  <p id="planner-menu-wall-count" class="hidden px-3 py-1.5 text-xs font-semibold text-steel"></p>
+  <ul>
+    <li class="group relative">
+      <div class="flex cursor-default items-center justify-between rounded px-3 py-2 text-sm text-ink hover:bg-mist"><span>{lang === "de" ? "Wandstärke" : "Wall thickness"}</span><span class="text-steel">&rsaquo;</span></div>
+      <ul class="absolute left-full top-0 hidden w-24 rounded border border-line bg-paper p-1.5 shadow-xl group-hover:block">
+        {[60,80,100,120,150,180,200].map((mm) => (
+          <li><button type="button" class="planner-ctx-wall-thickness w-full rounded px-3 py-1.5 text-left text-sm text-ink hover:bg-mist" data-value={mm}>{mm} mm</button></li>
+        ))}
+      </ul>
+    </li>
+    <li><div class="my-1.5 border-t border-line"></div></li>
+    <li><button type="button" id="planner-ctx-wall-delete" class="w-full rounded px-3 py-2 text-left text-sm text-signal hover:bg-mist">{lang === "de" ? "Löschen" : "Delete"}</button></li>
+  </ul>
+</div>
+
+<!-- Rechtsklick-Menü: Außentreppe -->
+<div id="planner-menu-stair" class="planner-ctx-menu card hidden fixed z-50 w-44 bg-paper p-1.5 shadow-xl">
+  <ul>
+    <li><button type="button" id="planner-ctx-stair-rotate" class="w-full rounded px-3 py-2 text-left text-sm text-ink hover:bg-mist">{lang === "de" ? "Drehen" : "Rotate"}</button></li>
+    <li><div class="my-1.5 border-t border-line"></div></li>
+    <li><button type="button" id="planner-ctx-stair-delete" class="w-full rounded px-3 py-2 text-left text-sm text-signal hover:bg-mist">{lang === "de" ? "Löschen" : "Delete"}</button></li>
+  </ul>
 </div>
 
 <div class="card mt-10 bg-mist p-6 sm:p-8">
@@ -332,12 +436,12 @@ const status = {
   let nextId = 1;
   let selected = null; // primary selection: {kind:'container'|'element', id}
   let selectedContainerIds = new Set();
+  let selectedElementIds = new Set(); // supports Shift + click multi-select of doors/windows/walls for batch right-click edits
   let nextGroupId = 1;
   const groupNames = new Map();
   let projectOuterWallMm = Number(outerWall?.value || 100);
   let projectInnerWallMm = Number(innerWall?.value || 100);
   let moduleClipboard = null;
-  let addCount = 0;
   let drag = null;
   let activeTool = "select";
   let wallStart = null;
@@ -370,8 +474,20 @@ const status = {
   function selectedContainer() { return selected?.kind === "container" ? items.find(i => i.id === selected.id) : null; }
   function selectedElement() { return selected?.kind === "element" ? elements.find(i => i.id === selected.id) : null; }
   function selectedContainers() { return items.filter(i => selectedContainerIds.has(i.id)); }
-  function setSingleContainerSelection(id) { selectedContainerIds = new Set([id]); selected = {kind:"container", id}; }
-  function clearSelection() { selected = null; selectedContainerIds.clear(); }
+  function setSingleContainerSelection(id) { selectedContainerIds = new Set([id]); selectedElementIds.clear(); selected = {kind:"container", id}; }
+  function setSingleElementSelection(kind, id) { selectedContainerIds.clear(); selectedElementIds = new Set([id]); selected = {kind, id}; }
+  function clearSelection() { selected = null; selectedContainerIds.clear(); selectedElementIds.clear(); }
+  // Elements the right-click should act on: the whole multi-selection if the
+  // clicked element is part of one and every member shares its type, otherwise just itself.
+  function elementsForContextAction(id) {
+    const clicked = elements.find(e => e.id === id);
+    if (!clicked) return [];
+    if (selectedElementIds.has(id) && selectedElementIds.size > 1) {
+      const group = elements.filter(e => selectedElementIds.has(e.id));
+      if (group.every(e => e.type === clicked.type)) return group;
+    }
+    return [clicked];
+  }
 
   function rotateLocalPoint(x, y, item) {
     const cx = item.width / 2, cy = item.length / 2;
@@ -625,11 +741,13 @@ const status = {
   function renderProperties() {
     const c = selectedContainer(); const e = selectedElement();
     const multiCount = selectedContainerIds.size;
-    noSelection.classList.toggle("hidden", !(multiCount>1 || (!selected && multiCount===0)));
+    const multiElementCount = selectedElementIds.size;
+    noSelection.classList.toggle("hidden", !(multiCount>1 || multiElementCount>1 || (!selected && multiCount===0 && multiElementCount===0)));
     if(multiCount>1) noSelection.textContent=`${multiCount} Module ausgewählt · „Gruppieren“ entfernt gemeinsame Zwischenwände und bewegt die Module anschließend als Einheit.`;
+    else if(multiElementCount>1) noSelection.textContent=`${multiElementCount} Bauteile ausgewählt · Rechtsklick ändert die Ausführung für alle gemeinsam (nur bei gleicher Art wirksam).`;
     else if(!selected) noSelection.textContent="Noch nichts ausgewählt.";
     containerProps.classList.toggle("hidden", !c || multiCount>1);
-    elementProps.classList.toggle("hidden", !e);
+    elementProps.classList.toggle("hidden", !e || multiElementCount>1);
     if (c) {
       selectedProduct.value = c.productId; selectedSize.value = c.size;
       const gross = c.width * c.length;
@@ -731,7 +849,7 @@ const status = {
     }
 
     for (const e of elements) {
-      const selectedNow = selected?.kind === "element" && selected.id === e.id;
+      const selectedNow = selectedElementIds.has(e.id);
       if (e.type === "wall") {
         const g = svgEl("g", { "data-kind":"element", "data-id":e.id, class:"planner-object" }); g.style.cursor="pointer";
         g.appendChild(svgEl("line", { x1:e.x1,y1:e.y1,x2:e.x2,y2:e.y2,stroke:selectedNow?"#c84a2f":"#15181b","stroke-width":Math.max(.06,e.thicknessMm/1000),"stroke-linecap":"square" }));
@@ -786,21 +904,136 @@ const status = {
     renderProperties();
   }
 
+  function addItemAt(productId, label, sizeCode, worldX, worldY) {
+    const size = sizeByCode[sizeCode]; if (!size) return;
+    const item={id:nextId++,productId,label,size:sizeCode,width:size.width,length:size.length,
+      x:clamp(worldX-size.width/2,0,worldW-size.width), y:clamp(worldY-size.length/2,0,worldH-size.length),
+      rot:0,outerWallMm:projectOuterWallMm,innerWallMm:projectInnerWallMm,groupId:null};
+    items.push(item); setSingleContainerSelection(item.id); snapItemToNeighbors(item); activeTool="select"; updateToolButtons(); render();
+    return item;
+  }
+
+  let addCount = 0;
   function addItem(productId, label, sizeCode) {
     const size = sizeByCode[sizeCode]; if (!size) return;
     addCount += 1;
-    const item={id:nextId++,productId,label,size:sizeCode,width:size.width,length:size.length,x:clamp(.5+((addCount-1)%6)*.4,0,worldW-size.width),y:clamp(.5+((addCount-1)%6)*.4,0,worldH-size.length),rot:0,outerWallMm:projectOuterWallMm,innerWallMm:projectInnerWallMm,groupId:null};
-    items.push(item); setSingleContainerSelection(item.id); activeTool="select"; updateToolButtons(); render();
+    const spawnX = clamp(.5+((addCount-1)%6)*.4, 0, worldW-size.width);
+    const spawnY = clamp(.5+((addCount-1)%6)*.4, 0, worldH-size.length);
+    addItemAt(productId, label, sizeCode, spawnX+size.width/2, spawnY+size.length/2);
   }
-
   document.querySelectorAll(".planner-add-btn").forEach(btn=>btn.addEventListener("click",()=>{
     const productId=btn.getAttribute("data-product"); const label=btn.getAttribute("data-label");
-    const selectEl=document.querySelector(`.planner-size-select[data-product="${productId}"]`); addItem(productId,label,selectEl?selectEl.value:sizes[0].code);
+    const selectEl=document.querySelector(`.planner-size-select[data-product="${productId}"]`);
+    addItem(productId,label,selectEl?selectEl.value:sizes[0].code);
   }));
 
   function updateToolButtons(){ document.querySelectorAll(".planner-tool").forEach(b=>b.classList.toggle("bg-mist",b.getAttribute("data-tool")===activeTool)); }
-  document.querySelectorAll(".planner-tool").forEach(btn=>btn.addEventListener("click",()=>{ activeTool=btn.getAttribute("data-tool"); wallStart=null; clearSelection(); updateToolButtons(); render(); }));
-  updateToolButtons();
+
+  // Right-click context menus for doors/windows/partitions/stairs: right-click
+  // empty canvas to switch tool, right-click a placed container/element to act
+  // on it (or, with several same-type elements Shift-selected, on all of them).
+  const menuEmpty = document.getElementById("planner-menu-empty");
+  const menuContainer = document.getElementById("planner-menu-container");
+  const menuWindow = document.getElementById("planner-menu-window");
+  const menuDoor = document.getElementById("planner-menu-door");
+  const menuWall = document.getElementById("planner-menu-wall");
+  const menuStair = document.getElementById("planner-menu-stair");
+  const allMenus = [menuEmpty, menuContainer, menuWindow, menuDoor, menuWall, menuStair].filter(Boolean);
+  const elementMenuByType = { window: menuWindow, door: menuDoor, wall: menuWall, stair: menuStair };
+  let contextElementId = null;
+
+  function hideMenus(){ allMenus.forEach(m=>m.classList.add("hidden")); contextElementId = null; }
+
+  function showMenu(menu, clientX, clientY){
+    hideMenus();
+    menu.classList.remove("hidden");
+    const rect = menu.getBoundingClientRect();
+    const vw = window.innerWidth, vh = window.innerHeight;
+    let left = clientX, top = clientY;
+    if (left + rect.width > vw - 8) left = Math.max(8, vw - rect.width - 8);
+    if (top + rect.height > vh - 8) top = Math.max(8, vh - rect.height - 8);
+    menu.style.left = `${left}px`;
+    menu.style.top = `${top}px`;
+  }
+
+  svg.addEventListener("contextmenu", evt => {
+    evt.preventDefault();
+    const target = evt.target.closest?.(".planner-object");
+    if (!target) {
+      clearSelection(); render();
+      showMenu(menuEmpty, evt.clientX, evt.clientY);
+      return;
+    }
+    const kind = target.getAttribute("data-kind"), id = Number(target.getAttribute("data-id"));
+    if (kind === "container") {
+      setSingleContainerSelection(id); render();
+      showMenu(menuContainer, evt.clientX, evt.clientY);
+      return;
+    }
+    const el = elements.find(x => x.id === id);
+    if (!el) return;
+    // Keep an existing same-type multi-selection intact; otherwise select just this one.
+    if (!(selectedElementIds.has(id) && selectedElementIds.size > 1)) setSingleElementSelection(kind, id);
+    render();
+    const menu = elementMenuByType[el.type];
+    if (!menu) return;
+    const countLabel = document.getElementById(`planner-menu-${el.type}-count`);
+    const targets = elementsForContextAction(id);
+    if (countLabel) countLabel.classList.toggle("hidden", targets.length <= 1);
+    if (countLabel && targets.length > 1) countLabel.textContent = `${targets.length} ausgewählt — Änderung gilt für alle`;
+    showMenu(menu, evt.clientX, evt.clientY);
+    contextElementId = id;
+  });
+
+  document.querySelectorAll(".planner-ctx-tool").forEach(btn => btn.addEventListener("click", () => {
+    activeTool = btn.dataset.tool; wallStart = null; clearSelection(); updateToolButtons(); render();
+    hideMenus();
+  }));
+  document.getElementById("planner-ctx-rotate")?.addEventListener("click", () => { rotateBtn?.click(); hideMenus(); });
+  document.getElementById("planner-ctx-group")?.addEventListener("click", () => { groupBtn?.click(); hideMenus(); });
+  document.getElementById("planner-ctx-ungroup")?.addEventListener("click", () => { ungroupBtn?.click(); hideMenus(); });
+  document.getElementById("planner-ctx-delete")?.addEventListener("click", () => { deleteBtn?.click(); hideMenus(); });
+
+  function applyToContextElements(mutate){
+    if (contextElementId == null) return;
+    for (const el of elementsForContextAction(contextElementId)) mutate(el);
+    render(); hideMenus();
+  }
+  document.querySelectorAll(".planner-ctx-window-type").forEach(btn => btn.addEventListener("click", () => applyToContextElements(e => { e.windowType = btn.dataset.value; })));
+  document.querySelectorAll(".planner-ctx-window-shutter").forEach(btn => btn.addEventListener("click", () => applyToContextElements(e => { e.shutter = btn.dataset.value; })));
+  document.querySelectorAll(".planner-ctx-window-width").forEach(btn => btn.addEventListener("click", () => applyToContextElements(e => {
+    e.width = Number(btn.dataset.value);
+    const item = items.find(i => i.id === e.containerId);
+    if (item) { const span = (e.side==="top"||e.side==="bottom") ? item.width : item.length; const half = e.width/2+.08; e.offset = clamp(e.offset, half, Math.max(half, span-half)); }
+  })));
+  document.getElementById("planner-ctx-window-delete")?.addEventListener("click", () => { deleteBtn?.click(); hideMenus(); });
+
+  document.querySelectorAll(".planner-ctx-door-swing").forEach(btn => btn.addEventListener("click", () => applyToContextElements(e => { e.swing = btn.dataset.value; })));
+  document.querySelectorAll(".planner-ctx-door-hinge").forEach(btn => btn.addEventListener("click", () => applyToContextElements(e => { e.hinge = btn.dataset.value; })));
+  document.querySelectorAll(".planner-ctx-door-width").forEach(btn => btn.addEventListener("click", () => applyToContextElements(e => {
+    e.width = Number(btn.dataset.value);
+    const item = items.find(i => i.id === e.containerId);
+    if (item) { const span = (e.side==="top"||e.side==="bottom") ? item.width : item.length; const half = e.width/2+.08; e.offset = clamp(e.offset, half, Math.max(half, span-half)); }
+  })));
+  document.getElementById("planner-ctx-door-delete")?.addEventListener("click", () => { deleteBtn?.click(); hideMenus(); });
+
+  document.querySelectorAll(".planner-ctx-wall-thickness").forEach(btn => btn.addEventListener("click", () => applyToContextElements(e => { e.thicknessMm = Number(btn.dataset.value); })));
+  document.getElementById("planner-ctx-wall-delete")?.addEventListener("click", () => { deleteBtn?.click(); hideMenus(); });
+
+  document.getElementById("planner-ctx-stair-rotate")?.addEventListener("click", () => applyToContextElements(e => { e.rot = ((e.rot||0)+90)%360; }));
+  document.getElementById("planner-ctx-stair-delete")?.addEventListener("click", () => { deleteBtn?.click(); hideMenus(); });
+
+  document.addEventListener("pointerdown", evt => {
+    if (allMenus.some(m => !m.classList.contains("hidden") && m.contains(evt.target))) return;
+    hideMenus();
+  });
+  document.addEventListener("keydown", evt => {
+    if (evt.key !== "Escape") return;
+    hideMenus();
+    if (activeTool !== "select") { activeTool = "select"; wallStart = null; updateToolButtons(); render(); }
+  });
+  window.addEventListener("scroll", hideMenus, true);
+  window.addEventListener("blur", hideMenus);
 
   svg.addEventListener("wheel",evt=>{
     evt.preventDefault(); evt.stopPropagation();
@@ -842,7 +1075,7 @@ const status = {
         }
         if (best && best.dist <= .30) item = best.item;
       }
-      if (item) addOpeningToContainer(item, activeTool, p);
+      if (item) { addOpeningToContainer(item, activeTool, p); activeTool = "select"; updateToolButtons(); }
       return;
     }
 
@@ -871,8 +1104,15 @@ const status = {
         drag={kind,id,startPointer:p,base:moving.map(i=>({id:i.id,x:i.x,y:i.y}))};
       }
     } else {
-      selectedContainerIds.clear(); selected={kind,id};
-      const e=elements.find(i=>i.id===id); if(e && e.type==="stair") drag={kind,id,stair:true,offsetX:p.x-e.x,offsetY:p.y-e.y}; else if(e && e.type!=="wall") drag={kind,id,opening:true};
+      if(evt.shiftKey){
+        selectedContainerIds.clear();
+        if(selectedElementIds.has(id)) selectedElementIds.delete(id); else selectedElementIds.add(id);
+        selected = selectedElementIds.size ? {kind,id:[...selectedElementIds].at(-1)} : null;
+      } else setSingleElementSelection(kind,id);
+      const e=elements.find(i=>i.id===id);
+      if(e && !evt.shiftKey){
+        if(e.type==="stair") drag={kind,id,stair:true,offsetX:p.x-e.x,offsetY:p.y-e.y}; else if(e.type!=="wall") drag={kind,id,opening:true};
+      }
     }
     svg.setPointerCapture(evt.pointerId); render();
   });
@@ -927,7 +1167,7 @@ const status = {
   rotateBtn?.addEventListener("click",()=>{ const c=selectedContainer(),e=selectedElement(); if(c && selectedContainerIds.size===1){c.rot=(c.rot+90)%360;snapItemToNeighbors(c);} else if(e?.type==="stair") e.rot=((e.rot||0)+90)%360; render(); });
   deleteBtn?.addEventListener("click",()=>{
     if(selectedContainerIds.size){const ids=new Set(selectedContainerIds);items=items.filter(i=>!ids.has(i.id));elements=elements.filter(e=>!ids.has(e.containerId));clearSelection();}
-    else if(selected?.kind==="element"){elements=elements.filter(i=>i.id!==selected.id);selected=null;}
+    else if(selectedElementIds.size){const ids=new Set(selectedElementIds);elements=elements.filter(i=>!ids.has(i.id));clearSelection();}
     render();
   });
   groupBtn?.addEventListener("click",()=>{
@@ -936,7 +1176,7 @@ const status = {
     const gid=nextGroupId++; sel.forEach(i=>i.groupId=gid); groupNames.set(gid,`Raumgruppe ${gid}`); setSingleContainerSelection(sel[0].id); render();
   });
   ungroupBtn?.addEventListener("click",()=>{const gids=new Set(selectedContainers().map(i=>i.groupId).filter(Boolean));items.forEach(i=>{if(gids.has(i.groupId))i.groupId=null;});gids.forEach(g=>groupNames.delete(g));render();});
-  clearBtn?.addEventListener("click",()=>{items=[];elements=[];groupNames.clear();clearSelection();addCount=0;wallStart=null;render();});
+  clearBtn?.addEventListener("click",()=>{items=[];elements=[];groupNames.clear();clearSelection();wallStart=null;render();});
 
   selectedProduct?.addEventListener("change",()=>{const c=selectedContainer();if(!c)return;const p=productById[selectedProduct.value];c.productId=p.id;c.label=p.shortLabel||p.label;render();});
   selectedSize?.addEventListener("change",()=>{const c=selectedContainer();if(!c)return;const sz=sizeByCode[selectedSize.value];if(!sz)return;c.size=selectedSize.value;c.width=sz.width;c.length=sz.length;snapItemToNeighbors(c);render();});
@@ -1041,7 +1281,7 @@ const status = {
     render();
   });
 
-  document.addEventListener("keydown",evt=>{ if(!selected && selectedContainerIds.size===0)return; const active=document.activeElement;if(active&&["INPUT","TEXTAREA","SELECT"].includes(active.tagName))return; const c=selectedContainer(),e=selectedElement(); if(evt.key==="Delete"||evt.key==="Backspace"){deleteBtn.click();evt.preventDefault();return;} if(evt.key.toLowerCase()==="r"&&c){rotateBtn.click();evt.preventDefault();return;} const step=.1; let handled=true; if(c){const fp=footprint(c);if(evt.key==="ArrowLeft")c.x=clamp(c.x-step,0,worldW-fp.w);else if(evt.key==="ArrowRight")c.x=clamp(c.x+step,0,worldW-fp.w);else if(evt.key==="ArrowUp")c.y=clamp(c.y-step,0,worldH-fp.h);else if(evt.key==="ArrowDown")c.y=clamp(c.y+step,0,worldH-fp.h);else handled=false;} else if(e&&e.type!=="wall"){if(e.type==="stair"){if(evt.key==="ArrowLeft")e.x-=step;else if(evt.key==="ArrowRight")e.x+=step;else if(evt.key==="ArrowUp")e.y-=step;else if(evt.key==="ArrowDown")e.y+=step;else handled=false;}else{const item=items.find(i=>i.id===e.containerId);if(!item){handled=false;}else{const span=(e.side==="top"||e.side==="bottom")?item.width:item.length;if(evt.key==="ArrowLeft"||evt.key==="ArrowUp")e.offset=clamp(e.offset-step,e.width/2+.08,span-e.width/2-.08);else if(evt.key==="ArrowRight"||evt.key==="ArrowDown")e.offset=clamp(e.offset+step,e.width/2+.08,span-e.width/2-.08);else handled=false;}}} else handled=false; if(handled){evt.preventDefault();render();} });
+  document.addEventListener("keydown",evt=>{ if(!selected && selectedContainerIds.size===0 && selectedElementIds.size===0)return; const active=document.activeElement;if(active&&["INPUT","TEXTAREA","SELECT"].includes(active.tagName))return; const c=selectedContainer(),e=selectedElement(); if(evt.key==="Delete"||evt.key==="Backspace"){deleteBtn.click();evt.preventDefault();return;} if(evt.key.toLowerCase()==="r"&&c){rotateBtn.click();evt.preventDefault();return;} const step=.1; let handled=true; if(c){const fp=footprint(c);if(evt.key==="ArrowLeft")c.x=clamp(c.x-step,0,worldW-fp.w);else if(evt.key==="ArrowRight")c.x=clamp(c.x+step,0,worldW-fp.w);else if(evt.key==="ArrowUp")c.y=clamp(c.y-step,0,worldH-fp.h);else if(evt.key==="ArrowDown")c.y=clamp(c.y+step,0,worldH-fp.h);else handled=false;} else if(e&&e.type!=="wall"){if(e.type==="stair"){if(evt.key==="ArrowLeft")e.x-=step;else if(evt.key==="ArrowRight")e.x+=step;else if(evt.key==="ArrowUp")e.y-=step;else if(evt.key==="ArrowDown")e.y+=step;else handled=false;}else{const item=items.find(i=>i.id===e.containerId);if(!item){handled=false;}else{const span=(e.side==="top"||e.side==="bottom")?item.width:item.length;if(evt.key==="ArrowLeft"||evt.key==="ArrowUp")e.offset=clamp(e.offset-step,e.width/2+.08,span-e.width/2-.08);else if(evt.key==="ArrowRight"||evt.key==="ArrowDown")e.offset=clamp(e.offset+step,e.width/2+.08,span-e.width/2-.08);else handled=false;}}} else handled=false; if(handled){evt.preventDefault();render();} });
 
   function planBounds(){
     const bs=items.map(containerBounds);
