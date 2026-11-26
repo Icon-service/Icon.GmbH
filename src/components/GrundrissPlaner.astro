@@ -1,5 +1,5 @@
 ---
-import { PLANNER_PRODUCTS, PLANNER_SIZES } from "../data/plannerCatalog";
+import { PLANNER_BAUREIHEN } from "../data/plannerCatalog";
 import { useTranslations, type Lang } from "../i18n/utils";
 
 type Props = { lang: Lang };
@@ -12,10 +12,6 @@ const action = `https://formspree.io/f/${FORMSPREE_ID}`;
 
 const WORLD_W = 24;
 const WORLD_H = 16;
-const PLANNER_SIZES_EXT = [
-  ...PLANNER_SIZES,
-  { code: "Flur 4.895", width: 2.44, length: 4.895 },
-];
 
 const status = {
   sending: lang === "de" ? "Wird gesendet …" : "Sending …",
@@ -33,16 +29,20 @@ const status = {
         {lang === "de" ? "Container hinzufügen" : "Add container"}
       </p>
       <div class="mt-3 space-y-3">
-        {PLANNER_PRODUCTS.map((p) => (
+        {PLANNER_BAUREIHEN.map((b) => (
           <div class="border-t border-line pt-3 first:border-t-0 first:pt-0">
-            <p class="text-sm font-semibold text-ink">{p.label}</p>
+            <p class="text-sm font-semibold text-ink">{b.label}</p>
             <div class="mt-2 flex gap-2">
-              <select class="planner-size-select w-full rounded border border-line bg-paper px-2 py-1.5 text-sm text-ink focus:border-signal focus:outline-none" data-product={p.id} data-label={p.shortLabel}>
-                {PLANNER_SIZES_EXT.map((s) => (
-                  <option value={s.code} selected={s.code === "20'"}>{s.code === "Flur 4.895" ? "Flur 2,44 × 4,895 m" : s.code}</option>
+              <select class="planner-size-select w-full rounded border border-line bg-paper px-2 py-1.5 text-sm text-ink focus:border-signal focus:outline-none" data-product={b.id} data-label={b.shortLabel}>
+                {b.categories.map((cat) => (
+                  <optgroup label={cat.label}>
+                    {cat.types.map((t) => (
+                      <option value={t.code}>{t.name} — {t.code} ({t.width}×{t.length} m)</option>
+                    ))}
+                  </optgroup>
                 ))}
               </select>
-              <button type="button" class="planner-add-btn btn-outline shrink-0 px-3 py-1.5 text-sm text-ink" data-product={p.id} data-label={p.shortLabel}>+</button>
+              <button type="button" class="planner-add-btn btn-outline shrink-0 px-3 py-1.5 text-sm text-ink" data-product={b.id} data-label={b.shortLabel}>+</button>
             </div>
           </div>
         ))}
@@ -85,14 +85,20 @@ const status = {
       <p class="text-xs font-bold uppercase tracking-wider text-steel">{lang === "de" ? "Auswahl bearbeiten" : "Edit selection"}</p>
       <p id="planner-no-selection" class="mt-3 text-sm text-steel">{lang === "de" ? "Noch nichts ausgewählt." : "Nothing selected."}</p>
       <div id="planner-container-properties" class="mt-3 hidden space-y-3">
-        <label class="block text-xs font-semibold text-steel">{lang === "de" ? "Containertyp" : "Container type"}
+        <label class="block text-xs font-semibold text-steel">{lang === "de" ? "Baureihe" : "Series"}
           <select id="planner-selected-product" class="mt-1 w-full rounded border border-line bg-paper px-2 py-2 text-sm text-ink">
-            {PLANNER_PRODUCTS.map((p) => <option value={p.id}>{p.label}</option>)}
+            {PLANNER_BAUREIHEN.map((b) => <option value={b.id}>{b.label}</option>)}
           </select>
         </label>
-        <label class="block text-xs font-semibold text-steel">{lang === "de" ? "Größe" : "Size"}
+        <label class="block text-xs font-semibold text-steel">{lang === "de" ? "Typ" : "Type"}
           <select id="planner-selected-size" class="mt-1 w-full rounded border border-line bg-paper px-2 py-2 text-sm text-ink">
-            {PLANNER_SIZES_EXT.map((s) => <option value={s.code}>{s.code === "Flur 4.895" ? "Flur 2,44 × 4,895 m" : s.code}</option>)}
+            {PLANNER_BAUREIHEN[0].categories.map((cat) => (
+              <optgroup label={cat.label}>
+                {cat.types.map((t) => (
+                  <option value={t.code}>{t.name} — {t.code} ({t.width}×{t.length} m)</option>
+                ))}
+              </optgroup>
+            ))}
           </select>
         </label>
         <div id="planner-group-name-wrap" class="hidden">
@@ -366,8 +372,7 @@ const status = {
 
 <script
   define:vars={{
-    products: PLANNER_PRODUCTS,
-    sizes: PLANNER_SIZES_EXT,
+    baureihen: PLANNER_BAUREIHEN,
     worldW: WORLD_W,
     worldH: WORLD_H,
     sending: status.sending,
@@ -428,8 +433,24 @@ const status = {
   const stairWidth = document.getElementById("planner-stair-width");
   const stairLength = document.getElementById("planner-stair-length");
 
-  const sizeByCode = Object.fromEntries(sizes.map((s) => [s.code, s]));
-  const productById = Object.fromEntries(products.map((p) => [p.id, p]));
+  const baureiheById = Object.fromEntries(baureihen.map((b) => [b.id, b]));
+  function typesOf(baureiheId) { return baureiheById[baureiheId]?.categories.flatMap((c) => c.types) ?? []; }
+  function typeByCode(baureiheId, code) { return typesOf(baureiheId).find((t) => t.code === code); }
+  function populateSizeOptions(baureiheId, selectedCode) {
+    const b = baureiheById[baureiheId]; if (!b || !selectedSize) return;
+    const hasCode = selectedCode != null && typeByCode(baureiheId, selectedCode);
+    selectedSize.innerHTML = "";
+    for (const cat of b.categories) {
+      const group = document.createElement("optgroup"); group.label = cat.label;
+      for (const t of cat.types) {
+        const opt = document.createElement("option");
+        opt.value = t.code; opt.textContent = `${t.name} — ${t.code} (${t.width}×${t.length} m)`;
+        group.appendChild(opt);
+      }
+      selectedSize.appendChild(group);
+    }
+    selectedSize.value = hasCode ? selectedCode : (typesOf(baureiheId)[0]?.code ?? "");
+  }
 
   let items = [];
   let elements = [];
@@ -749,7 +770,7 @@ const status = {
     containerProps.classList.toggle("hidden", !c || multiCount>1);
     elementProps.classList.toggle("hidden", !e || multiElementCount>1);
     if (c) {
-      selectedProduct.value = c.productId; selectedSize.value = c.size;
+      selectedProduct.value = c.productId; populateSizeOptions(c.productId, c.size);
       const gross = c.width * c.length;
       grossAreaEl.textContent = `${gross.toFixed(2)} m²`;
       netAreaEl.textContent = c.groupId ? `${groupNetArea(c.groupId).toFixed(2)} m² (Gruppe)` : `${netArea(c).toFixed(2)} m²`;
@@ -905,7 +926,7 @@ const status = {
   }
 
   function addItemAt(productId, label, sizeCode, worldX, worldY) {
-    const size = sizeByCode[sizeCode]; if (!size) return;
+    const size = typeByCode(productId, sizeCode); if (!size) return;
     const item={id:nextId++,productId,label,size:sizeCode,width:size.width,length:size.length,
       x:clamp(worldX-size.width/2,0,worldW-size.width), y:clamp(worldY-size.length/2,0,worldH-size.length),
       rot:0,outerWallMm:projectOuterWallMm,innerWallMm:projectInnerWallMm,groupId:null};
@@ -915,7 +936,7 @@ const status = {
 
   let addCount = 0;
   function addItem(productId, label, sizeCode) {
-    const size = sizeByCode[sizeCode]; if (!size) return;
+    const size = typeByCode(productId, sizeCode); if (!size) return;
     addCount += 1;
     const spawnX = clamp(.5+((addCount-1)%6)*.4, 0, worldW-size.width);
     const spawnY = clamp(.5+((addCount-1)%6)*.4, 0, worldH-size.length);
@@ -924,7 +945,7 @@ const status = {
   document.querySelectorAll(".planner-add-btn").forEach(btn=>btn.addEventListener("click",()=>{
     const productId=btn.getAttribute("data-product"); const label=btn.getAttribute("data-label");
     const selectEl=document.querySelector(`.planner-size-select[data-product="${productId}"]`);
-    addItem(productId,label,selectEl?selectEl.value:sizes[0].code);
+    addItem(productId,label,selectEl?selectEl.value:typesOf(productId)[0]?.code);
   }));
 
   function updateToolButtons(){ document.querySelectorAll(".planner-tool").forEach(b=>b.classList.toggle("bg-mist",b.getAttribute("data-tool")===activeTool)); }
@@ -1178,8 +1199,16 @@ const status = {
   ungroupBtn?.addEventListener("click",()=>{const gids=new Set(selectedContainers().map(i=>i.groupId).filter(Boolean));items.forEach(i=>{if(gids.has(i.groupId))i.groupId=null;});gids.forEach(g=>groupNames.delete(g));render();});
   clearBtn?.addEventListener("click",()=>{items=[];elements=[];groupNames.clear();clearSelection();wallStart=null;render();});
 
-  selectedProduct?.addEventListener("change",()=>{const c=selectedContainer();if(!c)return;const p=productById[selectedProduct.value];c.productId=p.id;c.label=p.shortLabel||p.label;render();});
-  selectedSize?.addEventListener("change",()=>{const c=selectedContainer();if(!c)return;const sz=sizeByCode[selectedSize.value];if(!sz)return;c.size=selectedSize.value;c.width=sz.width;c.length=sz.length;snapItemToNeighbors(c);render();});
+  selectedProduct?.addEventListener("change",()=>{
+    const c=selectedContainer();if(!c)return;
+    const b=baureiheById[selectedProduct.value];if(!b)return;
+    c.productId=b.id;c.label=b.shortLabel||b.label;
+    populateSizeOptions(b.id,null);
+    const sz=typeByCode(b.id,selectedSize.value);
+    if(sz){c.size=selectedSize.value;c.width=sz.width;c.length=sz.length;snapItemToNeighbors(c);}
+    render();
+  });
+  selectedSize?.addEventListener("change",()=>{const c=selectedContainer();if(!c)return;const sz=typeByCode(selectedProduct.value,selectedSize.value);if(!sz)return;c.size=selectedSize.value;c.width=sz.width;c.length=sz.length;snapItemToNeighbors(c);render();});
   outerWall?.addEventListener("change",()=>{
     projectOuterWallMm=Number(outerWall.value);
     for(const item of items) item.outerWallMm=projectOuterWallMm;

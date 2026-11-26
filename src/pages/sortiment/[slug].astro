@@ -7,6 +7,7 @@ import TechSpecSheet from "../../components/TechSpecSheet.astro";
 import { sortiment } from "../../data/sortiment";
 import { useTranslations, localizedPath } from "../../i18n/utils";
 import { getImage } from "../../lib/images";
+import { floorplanSvg } from "../../lib/floorplan";
 
 export function getStaticPaths() {
   return sortiment.map((p) => ({
@@ -82,25 +83,19 @@ const specRows = [
 
   <section class="mx-auto max-w-(--container-wide) px-6 py-16">
     <h2 class="text-2xl sm:text-3xl">{t("sortiment.variants.title")}</h2>
-    <div class="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-      {product.variants.map((v) => (
-        <div class="card p-5">
-          <p class="icon-topline">{v.code}</p>
-          <h3 class="mt-1.5 text-lg text-ink">{v.title}</h3>
-          <p class="mt-2 text-sm text-steel">{v.text}</p>
-          <dl class="mt-4 space-y-1.5 border-t border-line pt-3">
-            <div class="flex justify-between gap-4 text-[13px]">
-              <dt class="text-steel">{t("sortiment.variant.use")}</dt>
-              <dd class="text-right text-ink">{v.einsatz}</dd>
+    {product.categories.map((cat) => (
+      <div class="mt-8 first:mt-6">
+        <p class="icon-topline">{cat.label}</p>
+        <div class="mt-4 grid gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+          {cat.types.map((t2) => (
+            <div class="rounded-lg border border-line bg-paper p-3">
+              <p class="text-xs text-steel">{t2.name}</p>
+              <div class="mt-2 flex justify-center rounded bg-mist/60 py-2" set:html={floorplanSvg(t2, cat.key)} />
             </div>
-            <div class="flex justify-between gap-4 text-[13px]">
-              <dt class="text-steel">{t("sortiment.variant.planning")}</dt>
-              <dd class="text-right text-ink">{v.planung}</dd>
-            </div>
-          </dl>
+          ))}
         </div>
-      ))}
-    </div>
+      </div>
+    ))}
 
     <div class="mt-14">
       <BlockRenderer blocks={product.detailBlocksDe} />

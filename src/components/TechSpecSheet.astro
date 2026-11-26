@@ -10,33 +10,35 @@ const { spec } = Astro.props as Props;
     {spec.sourceNote}
   </div>
 
-  <div>
-    <h3 class="text-xl text-ink">Abmessungen und Gewichte</h3>
-    <div class="mt-4 overflow-x-auto">
-      <table class="w-full min-w-[640px] border-collapse text-left text-sm">
-        <thead>
-          <tr class="border-b border-line text-xs uppercase tracking-wider text-steel">
-            <th class="py-2 pr-4 font-bold">Größe</th>
-            <th class="py-2 pr-4 font-bold">Außenmaße (L×B×H)</th>
-            <th class="py-2 pr-4 font-bold">Innenmaße (L×B×H)</th>
-            <th class="py-2 pr-4 font-bold">Fläche</th>
-            <th class="py-2 font-bold">Gewicht</th>
-          </tr>
-        </thead>
-        <tbody>
-          {spec.dimensions.map((d) => (
-            <tr class="border-b border-line">
-              <td class="py-2.5 pr-4 font-bold text-ink">{d.size}</td>
-              <td class="py-2.5 pr-4 text-steel">{d.outer}</td>
-              <td class="py-2.5 pr-4 text-steel">{d.inner}</td>
-              <td class="py-2.5 pr-4 text-steel">{d.area}</td>
-              <td class="py-2.5 text-steel">{d.weight}</td>
+  {spec.dimensions.length > 0 && (
+    <div>
+      <h3 class="text-xl text-ink">Abmessungen und Gewichte</h3>
+      <div class="mt-4 overflow-x-auto">
+        <table class="w-full min-w-[640px] border-collapse text-left text-sm">
+          <thead>
+            <tr class="border-b border-line text-xs uppercase tracking-wider text-steel">
+              <th class="py-2 pr-4 font-bold">Größe</th>
+              <th class="py-2 pr-4 font-bold">Außenmaße (L×B×H)</th>
+              <th class="py-2 pr-4 font-bold">Innenmaße (L×B×H)</th>
+              <th class="py-2 pr-4 font-bold">Fläche</th>
+              <th class="py-2 font-bold">Gewicht</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {spec.dimensions.map((d) => (
+              <tr class="border-b border-line">
+                <td class="py-2.5 pr-4 font-bold text-ink">{d.size}</td>
+                <td class="py-2.5 pr-4 text-steel">{d.outer}</td>
+                <td class="py-2.5 pr-4 text-steel">{d.inner}</td>
+                <td class="py-2.5 pr-4 text-steel">{d.area}</td>
+                <td class="py-2.5 text-steel">{d.weight}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
-  </div>
+  )}
 
   <div>
     <h3 class="text-xl text-ink">Konstruktionsdetails</h3>
@@ -57,30 +59,32 @@ const { spec } = Astro.props as Props;
     </div>
   </div>
 
-  <div>
-    <h3 class="text-xl text-ink">Isolierung Wandpaneele — µ-Werte</h3>
-    <p class="mt-1.5 text-sm text-steel">Verfügbare Dämmstärken je nach gewünschtem Wärmedurchgangskoeffizienten (U-Wert), identisch über das gesamte Sortiment.</p>
-    <div class="mt-4 overflow-x-auto rounded border-2 border-signal">
-      <table class="w-full min-w-[420px] border-collapse text-left text-sm">
-        <thead>
-          <tr class="bg-signal text-xs uppercase tracking-wider text-paper">
-            <th class="px-4 py-2.5 font-bold">Material</th>
-            <th class="px-4 py-2.5 font-bold">Isolationsstärke</th>
-            <th class="px-4 py-2.5 font-bold">U-Wert</th>
-          </tr>
-        </thead>
-        <tbody>
-          {spec.insulationTable.map((row, i) => (
-            <tr class={i % 2 === 1 ? "bg-mist" : "bg-paper"}>
-              <td class="px-4 py-2 text-ink">{row.material}</td>
-              <td class="px-4 py-2 text-steel">{row.thickness}</td>
-              <td class="px-4 py-2 font-bold text-ink">{row.uValue}</td>
+  {spec.insulationTable.length > 0 && (
+    <div>
+      <h3 class="text-xl text-ink">Isolierung Wandpaneele — µ-Werte</h3>
+      <p class="mt-1.5 text-sm text-steel">Verfügbare Dämmstärken je nach gewünschtem Wärmedurchgangskoeffizienten (U-Wert), identisch über das gesamte Sortiment.</p>
+      <div class="mt-4 overflow-x-auto rounded border-2 border-signal">
+        <table class="w-full min-w-[420px] border-collapse text-left text-sm">
+          <thead>
+            <tr class="bg-signal text-xs uppercase tracking-wider text-paper">
+              <th class="px-4 py-2.5 font-bold">Material</th>
+              <th class="px-4 py-2.5 font-bold">Isolationsstärke</th>
+              <th class="px-4 py-2.5 font-bold">U-Wert</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {spec.insulationTable.map((row, i) => (
+              <tr class={i % 2 === 1 ? "bg-mist" : "bg-paper"}>
+                <td class="px-4 py-2 text-ink">{row.material}</td>
+                <td class="px-4 py-2 text-steel">{row.thickness}</td>
+                <td class="px-4 py-2 font-bold text-ink">{row.uValue}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
-  </div>
+  )}
 
   {spec.extraSections && spec.extraSections.length > 0 && (
     <div>

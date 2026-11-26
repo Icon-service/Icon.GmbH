@@ -1,14 +1,16 @@
 import type { Block } from "./leistungen";
+import { PLANNER_BAUREIHEN, type PlannerCategory } from "./plannerCatalog";
 
-// Content ported from the real icon_product posts. DE content is the
-// original copy; EN is a short working translation for now.
+// Sortiment ist nach FAGSIs eigener Baureihen-Struktur aufgebaut (technisches
+// Datenblatt Miete): pro Baureihe eine Seite mit Leercontainer-/
+// Treppencontainer-/Sanitärcontainer-Typen statt einzelner Use-Case-Produkte
+// mit einer für alle Produkte identischen, abstrakten Größenleiter.
+// `categories` kommt direkt aus plannerCatalog.ts, damit Sortiment-Seite und
+// Grundrissplaner immer dieselben Typen/Maße zeigen.
 
-export type Variant = {
-  code: string;
-  title: string;
-  text: string;
-  einsatz: string;
-  planung: string;
+export type SpecSection = {
+  heading: string;
+  rows: { label: string; value: string }[];
 };
 
 export type DimensionRow = {
@@ -19,11 +21,6 @@ export type DimensionRow = {
   weight: string;
 };
 
-export type SpecSection = {
-  heading: string;
-  rows: { label: string; value: string }[];
-};
-
 export type InsulationRow = {
   material: string;
   thickness: string;
@@ -31,130 +28,13 @@ export type InsulationRow = {
 };
 
 export type TechnicalDescription = {
-  /** where the placeholder figures below came from, shown as an on-page note */
   sourceNote: string;
   dimensions: DimensionRow[];
   sections: SpecSection[];
-  /** wall-panel insulation build-up — same options across the whole range */
   insulationTable: InsulationRow[];
   loadNote: string;
-  /** product-specific extras, e.g. sanitary fittings or approval notes */
   extraSections?: SpecSection[];
 };
-
-// Same for every product in the range, per ICON: the panel build-up options
-// don't change between Bürocontainer, Sanitärcontainer, etc.
-export const INSULATION_TABLE: InsulationRow[] = [
-  { material: "PUR Polyurethanschaum", thickness: "50 mm (Standard)", uValue: "0,42 W/m²K" },
-  { material: "PUR Polyurethanschaum", thickness: "60 mm", uValue: "0,34 W/m²K" },
-  { material: "PUR Polyurethanschaum", thickness: "80 mm", uValue: "0,25 W/m²K" },
-  { material: "PUR Polyurethanschaum", thickness: "100 mm", uValue: "0,20 W/m²K" },
-  { material: "PUR Polyurethanschaum", thickness: "120 mm", uValue: "0,17 W/m²K" },
-  { material: "PUR Polyurethanschaum", thickness: "150 mm", uValue: "0,14 W/m²K" },
-  { material: "MW Mineralwolle", thickness: "60 mm", uValue: "0,62 W/m²K" },
-  { material: "MW Mineralwolle", thickness: "80 mm", uValue: "0,48 W/m²K" },
-  { material: "MW Mineralwolle", thickness: "100 mm", uValue: "0,39 W/m²K" },
-  { material: "MW Mineralwolle", thickness: "120 mm", uValue: "0,33 W/m²K" },
-  { material: "MW Mineralwolle", thickness: "150 mm", uValue: "0,26 W/m²K" },
-  { material: "MW Mineralwolle", thickness: "200 mm", uValue: "0,20 W/m²K" },
-];
-
-// L×B×H stays the same across the whole range (10'/16'/20'/24'/30'); only
-// the weight moves with fit-out (e.g. sanitary containers carry plumbing).
-function buildDimensions(weights: [string, string, string, string, string]): DimensionRow[] {
-  const sizes: [string, string, string, string][] = [
-    ["10'", "2.991 × 2.438 × 2.791 mm", "2.820 × 2.267 × 2.500 mm", "ca. 6,4 m²"],
-    ["16'", "4.886 × 2.438 × 2.791 mm", "4.715 × 2.267 × 2.500 mm", "ca. 10,7 m²"],
-    ["20'", "6.058 × 2.438 × 2.791 mm", "5.887 × 2.267 × 2.500 mm", "ca. 13,4 m²"],
-    ["24'", "7.335 × 2.438 × 2.791 mm", "7.164 × 2.267 × 2.500 mm", "ca. 16,3 m²"],
-    ["30'", "9.125 × 2.438 × 2.791 mm", "8.954 × 2.267 × 2.500 mm", "ca. 20,3 m²"],
-  ];
-  return sizes.map(([size, outer, inner, area], i) => ({ size, outer, inner, area, weight: weights[i] }));
-}
-
-const STANDARD_LOAD_NOTE =
-  "Windbeständigkeit bis ca. 100 km/h, Dach-Schneelast im Standard ca. 1,5 kN/m² (Verstärkung auf Anfrage). Die zulässige Schneelast am Aufstellort ist vor Bestellung zu prüfen; bei höheren örtlichen Lasten sind zusätzliche Maßnahmen erforderlich.";
-
-const PLACEHOLDER_SOURCE_NOTE =
-  "Vorläufige technische Angaben, orientiert an marktüblichen Standardgrößen. Wird durch die tatsächlichen ICON-Werte ersetzt.";
-
-// Shared construction sections (Dach/Boden/Ecksäulen/Lackierung) repeat almost
-// verbatim across the range — only Wandpaneele/Türen/Fenster/Elektro tend to
-// vary by product. Kept as a function (not a constant) so each product gets
-// its own array instance to extend/override.
-function baseConstructionSections(): SpecSection[] {
-  return [
-    {
-      heading: "Dach",
-      rows: [
-        { label: "Rahmenkonstruktion", value: "Kaltgewalzte Stahlprofile, 3 mm, verschweißt; Containerecken nach ISO-Norm" },
-        { label: "Dachdeckung", value: "Verzinktes, beschichtetes Stahlblech, 0,6 mm, umlaufender Doppelfalz" },
-        { label: "Isolierung", value: "Mineralwolle 100 mm - 140 mm, Brandklasse A1 (nicht brennbar)" },
-        { label: "Wärmedämmung", value: "U-Wert ca. 0,36 W/m²K" },
-        { label: "Farbe innen", value: "RAL 9002 Grauweiß" },
-      ],
-    },
-    {
-      heading: "Boden",
-      rows: [
-        { label: "Rahmenkonstruktion", value: "Kaltgewalzte Stahlprofile, 3 mm, verschweißt" },
-        { label: "Gabelstaplertaschen", value: "Optional, Achsabstand 1.200 mm" },
-        { label: "Unterboden", value: "Verzinktes Blech, 0,6 mm" },
-	{ label: "Dämmung", value: "Steinwolle WLG 035, 100mm" },
-        { label: "Fußboden", value: "Zementgebundene Spanplatte, 21 mm, wasserabweisend, formaldehydfrei" },
-        { label: "Bodenbelag", value: "Homogener PVC-Belag, 2 mm, Rutschfestigkeitsklasse R10" },
-        { label: "Wärmedämmung", value: "U-Wert ca. 0,34 W/m²K" },
-      ],
-    },
-    {
-      heading: "Wandpaneele",
-      rows: [
-        { label: "Ausführung", value: "Auswechselbare Wandelemente" },
-        { label: "Außen-/Innenverkleidung", value: "Verzinktes, farbbeschichtetes Stahlblech, 0,55 mm" },
-        { label: "Farbe innen/außen", value: "RAL 9002 Grauweiß, weitere RAL-Töne auf Anfrage" },
-        { label: "Isolierung", value: "PUR-Hartschaum 50–150 mm oder Mineralwolle 60–200 mm — siehe Isolierungstabelle unten" },
-      ],
-    },
-    {
-      heading: "Ecksäulen",
-      rows: [
-        { label: "Ausführung", value: "Kaltgewalzte Stahlprofile, 3 mm, mit Boden- und Dachrahmen verschweißt oder verschraubt; Tragfähigkeit ab ca. 1.800 kg/Säule" },
-        { label: "Isolierung", value: "Gepresste Steinwolleplatten gegen Kältebrücken" },
-      ],
-    },
-    {
-      heading: "Lackierung",
-      rows: [
-        { label: "Vorbehandlung", value: "Entfettung und Grundierung der Stahlprofile, galvanische Verzinkung der Dünnbleche" },
-        { label: "Beschichtung", value: "Epoxy-Grundierung mit Vinylacryl-Decklack bzw. PUR-Einschichtlack auf Dünnblech" },
-      ],
-    },
-    {
-      heading: "Türen",
-      rows: [
-        { label: "Konstruktion", value: "Einflügelige Stahltür, lichtes Maß ca. 820 × 2.000 mm, links oder rechts angeschlagen" },
-        { label: "Isolierung", value: "Isolierplatte, ca. 40 mm" },
-      ],
-    },
-    {
-      heading: "Fenster",
-      rows: [
-        { label: "Konstruktion", value: "Kunststofffenster mit Dreh-/Kippbeschlag, ca. 790 × 1.000 mm, Isolierverglasung, Rollladen optional" },
-        { label: "Wärmedämmung", value: "Uw-Wert ca. 1,6 W/m²K" },
-      ],
-    },
-    {
-      heading: "Elektroinstallation",
-      rows: [
-        { label: "Netzanschluss", value: "CEE-Anschluss, 5-polig, 32 A, 400 V, nach VDE-Richtlinien" },
-        { label: "Verteilung", value: "Unterputz mit FI-Schutzschalter und Sicherungsautomaten" },
-        { label: "Beleuchtung", value: "Wannenleuchten, Spiegelrasterleuchte optional" },
-        { label: "Heizung", value: "Elektrokonvektor, ca. 2 kW, mit Thermostat" },
-        { label: "Klima", value: "Optional als Kompakt- oder Split-Klimagerät" },
-      ],
-    },
-  ];
-}
 
 export type SortimentProduct = {
   id: string;
@@ -164,325 +44,300 @@ export type SortimentProduct = {
   excerpt: { de: string; en: string };
   heroLead: { de: string; en: string };
   introExtra?: string;
-  variants: Variant[];
+  categories: PlannerCategory[];
   detailBlocksDe: Block[];
-  technicalDescription?: TechnicalDescription;
+  technicalDescription: TechnicalDescription;
 };
+
+const FAGSI_SOURCE_NOTE =
+  "Typen, Maße und technische Kennwerte orientieren sich an FAGSIs Referenz-Baureihenstruktur (technisches Datenblatt Miete) und werden durch die tatsächlichen ICON-Werte ersetzt, sobald verfügbar.";
+
+function technicalSections(d: {
+  einsatzdauer: string;
+  einsatzart: string;
+  konstruktion: string;
+  nutzlast: string;
+  schneelast: string;
+  brandschutz: string;
+  dach: string;
+  wand: string;
+  boden: string;
+  laenge: string;
+  breite: string;
+  aussenhoehe: string;
+  raumhoehe: string;
+}): SpecSection[] {
+  return [
+    {
+      heading: "Einsatz",
+      rows: [
+        { label: "Einsatzdauer", value: d.einsatzdauer },
+        { label: "Einsatzart", value: d.einsatzart },
+        { label: "Konstruktion", value: d.konstruktion },
+      ],
+    },
+    {
+      heading: "Tragfähigkeit & Brandschutz",
+      rows: [
+        { label: "Typenstatik", value: "3-geschossig" },
+        { label: "Nutzlast", value: d.nutzlast },
+        { label: "Schneelast", value: d.schneelast },
+        { label: "Brandschutz", value: d.brandschutz },
+      ],
+    },
+    {
+      heading: "Wärmedurchgangskoeffizient",
+      rows: [
+        { label: "Dach", value: d.dach },
+        { label: "Wand", value: d.wand },
+        { label: "Boden", value: d.boden },
+      ],
+    },
+    {
+      heading: "Abmessung",
+      rows: [
+        { label: "Länge", value: d.laenge },
+        { label: "Breite", value: d.breite },
+        { label: "Außenhöhe", value: d.aussenhoehe },
+        { label: "Raumhöhe", value: d.raumhoehe },
+      ],
+    },
+  ];
+}
+
+function categoriesFor(baureiheId: string): PlannerCategory[] {
+  return PLANNER_BAUREIHEN.find((b) => b.id === baureiheId)!.categories;
+}
 
 export const sortiment: SortimentProduct[] = [
   {
-    id: "buerocontainer",
-    slugDe: "buerocontainer",
-    slugEn: "office-containers",
-    name: { de: "Bürocontainer", en: "Office Containers" },
+    id: "icon-eco",
+    slugDe: "icon-eco",
+    slugEn: "icon-eco",
+    name: { de: "ICON Eco", en: "ICON Eco" },
     excerpt: {
-      de: "Bürocontainer schaffen schnell nutzbare Arbeits- und Verwaltungsräume für Baustellen, Projektstandorte, Industrie und temporäre Erweiterungen.",
-      en: "Office containers provide quickly usable work and administrative space for construction sites, project locations, industry and temporary expansion.",
+      de: "Die wirtschaftliche Standardlösung für Baustellenunterkünfte, Baustellenbüros und Sanitärcontainer — als temporäre Lösung bei Umbau- oder Sanierungsmaßnahmen.",
+      en: "The economical standard solution for site accommodation, site offices and sanitary containers — a temporary solution during renovation work.",
     },
     heroLead: {
-      de: "Bürocontainer sind die richtige Lösung, wenn Arbeitsplätze, Bauleitung, Besprechung, Empfang oder Verwaltung kurzfristig und sauber organisiert werden müssen. Sie können einzeln eingesetzt oder zu größeren Büroanlagen kombiniert werden.",
-      en: "Office containers are the right solution when workstations, site management, meetings, reception or administration need to be organized quickly and cleanly.",
+      de: "ICON Eco ist die wirtschaftliche Einstiegslösung für die Bauindustrie — vollverzinkter, geschweißter Stahlrahmen mit Sandwichwänden, ideal für Baustellenunterkünfte, Baustellenbüros und Sanitärcontainer bei temporärem Bedarf.",
+      en: "ICON Eco is the economical entry-level solution for the construction industry — fully galvanized, welded steel frame with sandwich walls, ideal for site accommodation, site offices and sanitary containers for temporary needs.",
     },
-    introExtra:
-      "Wichtig sind Tageslicht, Raumklima, Elektroausstattung, Möblierungslogik, Schallschutz und eine sinnvolle Wegeführung. Je nach Projekt können kompakte Einheiten, 20-Fuß-Container, XL-Breiten oder Sonderbau sinnvoll sein.",
-    variants: [
-      { code: "10'", title: "Kompakte Büroeinheit", text: "Für einzelne Arbeitsplätze, Kontrollpunkte oder kleine Bauleitungsbüros mit begrenzter Stellfläche.", einsatz: "Arbeitsplatz, Pförtnerfunktion, Projektbüro", planung: "kurze Wege, schnelle Stellung" },
-      { code: "16'", title: "Erweiterte Büroeinheit", text: "Mehr Platz für zwei Arbeitsplätze, kleine Besprechungen oder eine getrennte Büro- und Ablagezone.", einsatz: "Bauleitung, Verwaltung, Besprechung", planung: "mehr Fläche bei kompakter Logistik" },
-      { code: "20'", title: "Standard-Bürocontainer", text: "Vollwertige temporäre Bürofläche mit guter Möblierbarkeit und flexibler Nutzung.", einsatz: "Projektbüro, Verwaltung, Empfang", planung: "Standardformat, gut kombinierbar" },
-      { code: "20' XL", title: "XL-Bürocontainer", text: "Breitere Ausführung für komfortablere Arbeitsplätze und bessere Bewegungsflächen.", einsatz: "Büro, Besprechung, Verwaltung", planung: "mehr Breite, bessere Raumwirkung" },
-      { code: "Sonderbau", title: "Bürocontainer als Sonderbau", text: "Individuelle Maße, Fensterachsen, Türen, Ausbau, Klima, Datenanschlüsse oder Fassadenanpassungen.", einsatz: "projektspezifische Büroflächen", planung: "individuelle technische Abstimmung" },
-    ],
+    categories: categoriesFor("icon-eco"),
     detailBlocksDe: [
       {
         type: "paragraphs",
         heading: "Produktbeschreibung und Einsatzbereiche",
         text: [
-          "Ein guter Bürocontainer muss nicht nur schnell verfügbar sein, sondern im Alltag funktionieren. Dazu gehören ausreichend Licht, passende Steckdosenpositionen, Heizung oder Kühlung, robuste Oberflächen und eine Raumaufteilung, die zu den Arbeitsabläufen passt.",
-          "Bei größeren Projekten können mehrere Bürocontainer mit Fluren, Sanitärbereichen, Aufenthaltsräumen oder Treppenanlagen kombiniert werden. Dadurch entstehen strukturierte Büroanlagen, die temporär genutzt und später erweitert oder versetzt werden können.",
+          "ICON Eco ist die wirtschaftliche Standardlösung für die Bauindustrie: Baustellenunterkünfte, Baustellenbüros und Sanitärcontainer, sowie Übergangslösungen bei Umbau- und Sanierungsmaßnahmen.",
+          "Vollverzinkter, geschweißter Stahlrahmen mit Sandwichwänden auf PU-Kernbasis — eine robuste, kosteneffiziente Bauweise für temporäre Standorte mit hohem Praxisbedarf.",
         ],
       },
     ],
-    // TODO(ICON): Platzhalterwerte, orientiert an einem Referenz-Datenblatt eines
-    // Mitbewerbers (Conzept) — durch echte ICON-Werte ersetzen, sobald verfügbar.
     technicalDescription: {
-      sourceNote: PLACEHOLDER_SOURCE_NOTE,
-      dimensions: buildDimensions(["ca. 1.225 kg", "ca. 1.650 kg", "ca. 1.850 kg", "ca. 2.150 kg", "ca. 2.550 kg"]),
-      sections: baseConstructionSections(),
-      insulationTable: INSULATION_TABLE,
-      loadNote: STANDARD_LOAD_NOTE,
+      sourceNote: FAGSI_SOURCE_NOTE,
+      dimensions: [],
+      sections: technicalSections({
+        einsatzdauer: "Temporäre Lösung",
+        einsatzart: "Baustellenunterkünfte, Baustellenbüros, Sanitärcontainer, Übergangslösung bei Umbau-/Sanierungsmaßnahmen",
+        konstruktion: "Vollverzinkter, geschweißter Stahlrahmen, Sandwichwände mit PU-Kern",
+        nutzlast: "2,0 kN/m²",
+        schneelast: "1,0 kN/m²",
+        brandschutz: "nicht spezifiziert",
+        dach: "U = 0,412 W/m²K",
+        wand: "U = 0,380 W/m²K",
+        boden: "U = 0,598 W/m²K",
+        laenge: "6,058 m",
+        breite: "2,438 m",
+        aussenhoehe: "2,800 m",
+        raumhoehe: "2,500 m",
+      }),
+      insulationTable: [],
+      loadNote: "Nutzlast 2,0 kN/m², Dach-Schneelast im Standard 1,0 kN/m² (Verstärkung auf Anfrage). Die zulässige Schneelast am Aufstellort ist vor Bestellung zu prüfen.",
     },
   },
   {
-    id: "wohn-unterkunftscontainer",
-    slugDe: "wohn-und-unterkunftscontainer",
-    slugEn: "residential-accommodation-containers",
-    name: { de: "Wohn- und Unterkunftscontainer", en: "Residential & Accommodation Containers" },
+    id: "icon-basic",
+    slugDe: "icon-basic",
+    slugEn: "icon-basic",
+    name: { de: "ICON Basic", en: "ICON Basic" },
     excerpt: {
-      de: "Wohn- und Unterkunftscontainer bieten temporäre Wohnflächen für Personal, Projektstandorte, kommunale Bedarfe und Übergangslösungen.",
-      en: "Residential and accommodation containers provide temporary living space for staff, project sites, municipal needs and transitional housing.",
+      de: "Die flexible Einstiegslösung für temporäre Nutzung bis 24 Monate — als Bürogebäude, Schule, Kindergarten oder Übergangslösung bei Umbau- und Sanierungsmaßnahmen.",
+      en: "The flexible entry-level solution for temporary use up to 24 months — as office building, school, kindergarten or interim solution during renovation.",
     },
     heroLead: {
-      de: "Wohn- und Unterkunftscontainer werden eingesetzt, wenn sichere und funktionale Unterbringung kurzfristig benötigt wird. Sie eignen sich für Personalwohnen, Projektstandorte, kommunale Unterkünfte oder temporäre Wohnanlagen.",
-      en: "Residential and accommodation containers are used when safe, functional housing is needed at short notice — for staff, project sites, municipal or temporary housing.",
+      de: "ICON Basic ist die richtige Wahl, wenn kurzfristig und temporär Raum benötigt wird — als Baubüro, Schule, Kindergarten oder Übergangslösung während Umbau oder Sanierung. Stahlrahmen mit Profilblechwänden, bis zu dreigeschossig kombinierbar.",
+      en: "ICON Basic is the right choice when space is needed quickly and temporarily — as a site office, school, kindergarten or interim solution during renovation. Steel frame with profiled sheet walls, combinable up to three storeys.",
     },
-    introExtra:
-      "Die Planung umfasst Schlafbereiche, Sanitärnähe, Aufenthaltsflächen, Erschließung, Brandschutz, technische Versorgung und Betreiberanforderungen. Häufig sind 20-Fuß- oder XL-Lösungen sinnvoller als kleine Einzelgrößen.",
-    variants: [
-      { code: "20'", title: "Wohncontainer 20 Fuß", text: "Standardisierte Unterkunftseinheit für Schlafen, Aufenthalt oder kombinierte Nutzung.", einsatz: "Personalunterkunft, Projektstandort", planung: "klare Grundrisse, kombinierbar" },
-      { code: "20' XL", title: "Wohncontainer XL", text: "Mehr Breite und bessere Bewegungsflächen für komfortablere Unterbringung.", einsatz: "temporäres Wohnen, kommunale Bedarfe", planung: "komfortablere Möblierung" },
-      { code: "Anlage", title: "Unterkunftsanlage", text: "Kombination aus Wohn-, Sanitär-, Aufenthalts-, Verwaltungs- und Technikbereichen.", einsatz: "größere Unterkünfte", planung: "Erschließung und Betrieb mitdenken" },
-      { code: "Sonderbau", title: "Unterkunft als Sonderbau", text: "Individuelle Raumprogramme, besondere Ausstattung oder Betreiberanforderungen.", einsatz: "spezielle Unterkunftsprojekte", planung: "projektbezogene Abstimmung" },
-    ],
+    categories: categoriesFor("icon-basic"),
     detailBlocksDe: [
       {
         type: "paragraphs",
         heading: "Produktbeschreibung und Einsatzbereiche",
         text: [
-          "Bei Unterkunftslösungen zählen nicht nur einzelne Räume, sondern das Zusammenspiel aus Schlafen, Waschen, Aufenthalt, Verwaltung, Wegen und technischer Versorgung. Eine gute Planung reduziert spätere Betriebsprobleme.",
-          "Je nach Nutzung können einfache Schlafräume, komfortablere Wohnbereiche, gemeinschaftliche Aufenthaltsräume oder komplette Anlagen sinnvoll sein.",
+          "ICON Basic deckt die klassischen temporären Einsatzfälle ab: Bürogebäude, Schulen oder Kindergärten sowie Übergangslösungen bei Umbau- und Sanierungsmaßnahmen, in der Regel bis 24 Monate Standzeit.",
+          "Die Baureihe umfasst Leercontainer (offen, mit Trennwand oder mit Flur), Treppencontainer für mehrgeschossige Anlagen sowie Sanitärcontainer in verschiedenen WC- und Duschausführungen — alle mit denselben Grundmaßen kombinierbar.",
         ],
       },
     ],
-    // TODO(ICON): Platzhalter, 1:1 Struktur wie Bürocontainer — bitte mit echten
-    // Werten für Wohn-/Unterkunftscontainer ersetzen (Wandpaneele, Türen ggf. gleich).
     technicalDescription: {
-      sourceNote: PLACEHOLDER_SOURCE_NOTE,
-      dimensions: buildDimensions(["ca. 1.225 kg", "ca. 1.650 kg", "ca. 1.850 kg", "ca. 2.150 kg", "ca. 2.550 kg"]),
-      sections: baseConstructionSections(),
-      insulationTable: INSULATION_TABLE,
-      loadNote: STANDARD_LOAD_NOTE,
+      sourceNote: FAGSI_SOURCE_NOTE,
+      dimensions: [],
+      sections: technicalSections({
+        einsatzdauer: "Temporäre Lösung bis 24 Monate",
+        einsatzart: "Bürogebäude, Schulen oder Kindergärten, Übergangslösung bei Umbau-/Sanierungsmaßnahmen",
+        konstruktion: "Stahlrahmen mit Profilblechwänden",
+        nutzlast: "2,0–5,0 kN/m²",
+        schneelast: "1,5 kN/m²",
+        brandschutz: "analog F30",
+        dach: "U = 0,510 W/m²K",
+        wand: "U = 0,641 W/m²K",
+        boden: "U = 0,598 W/m²K",
+        laenge: "6,058–10,000 m",
+        breite: "2,500 / 3,000 m",
+        aussenhoehe: "2,800 m",
+        raumhoehe: "2,500 m",
+      }),
+      insulationTable: [],
+      loadNote: "Nutzlast 2,0–5,0 kN/m², Dach-Schneelast im Standard 1,5 kN/m² (Verstärkung auf Anfrage). Die zulässige Schneelast am Aufstellort ist vor Bestellung zu prüfen.",
     },
   },
   {
-    id: "sanitaercontainer",
-    slugDe: "sanitaercontainer",
-    slugEn: "sanitary-containers",
-    name: { de: "Sanitärcontainer", en: "Sanitary Containers" },
+    id: "icon-basic-2",
+    slugDe: "icon-basic-2-0",
+    slugEn: "icon-basic-2-0",
+    name: { de: "ICON Basic 2.0", en: "ICON Basic 2.0" },
     excerpt: {
-      de: "Sanitärcontainer bündeln WC, Dusche, Waschbereiche und Umkleiden für Baustellen, Unterkünfte, Veranstaltungen und Anlagen.",
-      en: "Sanitary containers combine WC, shower, washing and changing areas for construction sites, accommodation, events and complexes.",
+      de: "Der Fortschritt des Bewährten: gleiche temporäre Einsatzdauer wie ICON Basic, mit optionaler Kassettenfassade und erweiterten Sanitärvarianten für Bildungseinrichtungen sowie Büro- und Verwaltungsgebäude.",
+      en: "The next step from the proven Basic range: same temporary use case, with an optional cassette façade and extended sanitary variants for education, office and administration buildings.",
     },
     heroLead: {
-      de: "Sanitärcontainer stellen WC-, Dusch-, Wasch- und Umkleidebereiche dort bereit, wo feste Infrastruktur fehlt oder temporär erweitert werden muss. Sie werden einzeln genutzt oder in Containeranlagen eingebunden.",
-      en: "Sanitary containers provide WC, shower, washing and changing facilities wherever fixed infrastructure is missing or needs temporary expansion.",
+      de: "ICON Basic 2.0 baut auf der bewährten Basic-Reihe auf — für dieselben temporären Einsatzbereiche, aber mit optionaler Kassettenfassade für ein höherwertiges Erscheinungsbild und deutlich mehr Sanitärvarianten für Schulen, Kitas, Büro- und Verwaltungsgebäude.",
+      en: "ICON Basic 2.0 builds on the proven Basic range — same temporary use cases, but with an optional cassette façade for a higher-quality appearance and significantly more sanitary variants for schools, kindergartens, office and administration buildings.",
     },
-    introExtra:
-      "Wichtig sind Wasser- und Abwasserführung, Lüftung, Reinigung, robuste Oberflächen, Frostschutz, Nutzerfrequenz und die Trennung von Bereichen. Die passende Variante richtet sich nach Personenanzahl und Nutzungsart.",
-    variants: [
-      { code: "10'", title: "Kompakter Sanitärcontainer", text: "Für kleine Standorte, kurze Wege oder ergänzende Sanitärpunkte mit begrenzter Nutzerzahl.", einsatz: "WC, Waschplatz, kleiner Standort", planung: "kompakt, schnell anschließbar" },
-      { code: "16'", title: "Sanitäreinheit mit mehr Kapazität", text: "Für kombinierte WC- und Waschbereiche oder kleinere Duschlösungen.", einsatz: "Baustelle, Betrieb, temporäre Nutzung", planung: "mehr Nutzerkapazität" },
-      { code: "20'", title: "Sanitärcontainer 20 Fuß", text: "Standardlösung für WC, Dusche, Waschbereiche oder Umkleiden.", einsatz: "Sanitärversorgung, Duschbereich", planung: "standardisiert, gut kombinierbar" },
-      { code: "20' XL", title: "Sanitärcontainer XL", text: "Mehr Breite für komfortablere Kabinen und höhere Ausstattung.", einsatz: "intensivere Nutzung", planung: "komfortabler Betrieb" },
-      { code: "Sonderbau", title: "Sanitärcontainer als Sonderbau", text: "Individuelle Kabinenaufteilung, robuste Oberflächen oder projektbezogene Technik.", einsatz: "besondere Betreiberanforderungen", planung: "Sanitärplanung nach Bedarf" },
-    ],
+    categories: categoriesFor("icon-basic-2"),
     detailBlocksDe: [
       {
         type: "paragraphs",
         heading: "Produktbeschreibung und Einsatzbereiche",
         text: [
-          "Die passende Sanitärlösung hängt von Nutzerzahl, Nutzungsdauer, Reinigungsintervallen und Anschlussmöglichkeiten ab. Ein kleiner Standort benötigt eine andere Lösung als eine Unterkunftsanlage oder ein stark frequentierter Baustellenbereich.",
-          "Für größere Anlagen werden Sanitärcontainer oft mit Wohn-, Aufenthalts- oder Bürobereichen kombiniert. Dadurch entstehen kurze Wege und eine klare Versorgung innerhalb der gesamten Containeranlage.",
+          "ICON Basic 2.0 richtet sich an dieselben Einsatzfälle wie ICON Basic, bietet aber mehr Auswahl bei der Fassade (Profilblech oder optionale Kassettenfassade) sowie deutlich mehr Sanitärvarianten — getrennt nach Bildungssektor (Kita, Schule) und Büro-/Verwaltungsnutzung.",
+          "Auch hier sind Leercontainer, Treppencontainer und Sanitärcontainer frei zu Anlagen kombinierbar, bis zu dreigeschossig.",
         ],
       },
     ],
-    // TODO(ICON): Platzhalterwerte, orientiert an einem Referenz-Datenblatt eines
-    // Mitbewerbers (Conzept, WC-Container) — durch echte ICON-Werte ersetzen.
     technicalDescription: {
-      sourceNote:
-        "Vorläufige technische Angaben, orientiert an marktüblichen Sanitärcontainer-Standardgrößen. Wird durch die tatsächlichen ICON-Werte ersetzt.",
-      dimensions: buildDimensions(["ca. 2.175 kg", "ca. 2.525 kg", "ca. 2.875 kg", "ca. 3.250 kg", "ca. 3.700 kg"]),
-      sections: [
-        ...baseConstructionSections().filter((s) => !["Fenster", "Elektroinstallation"].includes(s.heading)),
-        {
-          heading: "Fenster",
-          rows: [
-            { label: "Konstruktion", value: "Kunststofffenster mit Dreh-/Kippbeschlag, lichtes Maß ca. 550 × 550 mm, Isolierverglasung — kleinformatig aus Gründen der Privatsphäre" },
-            { label: "Wärmedämmung", value: "Uw-Wert ca. 1,6 W/m²K" },
-          ],
-        },
-        {
-          heading: "Elektroinstallation",
-          rows: [
-            { label: "Ausführung", value: "Feuchtraumausführung, Unterputz, nach VDE-Richtlinien" },
-            { label: "Netzanschluss", value: "CEE-Anschluss, 5-polig, 32 A, 230/400 V, 50/60 Hz" },
-            { label: "Verteilung", value: "Unterputz-Verteilerkasten mit FI-Schutzschalter und Sicherungsautomaten" },
-            { label: "Beleuchtung", value: "Wannenleuchten" },
-            { label: "Heizung", value: "Von Frostwächter (ca. 0,5 kW) bis Elektrokonvektor (ca. 2 kW), feuchtraumgeeignet" },
-            { label: "Entlüftung", value: "Ventilator zur Luftabsaugung, ca. 170 m³/h" },
-            { label: "Klima", value: "Optional als Kompakt- oder Split-Klimagerät" },
-          ],
-        },
-      ],
-      insulationTable: INSULATION_TABLE,
-      loadNote: STANDARD_LOAD_NOTE,
-      extraSections: [
-        {
-          heading: "Sanitärausstattung",
-          rows: [
-            { label: "Verrohrung", value: "Nutzwasser in Kunststoff oder Alu-Verbund; Ab- und Brauchwasser in PVC" },
-            { label: "WC-Kabinen", value: "Porzellanmuschel mit Spülkasten, inkl. Papierhalter" },
-            { label: "Urinal", value: "Porzellan mit Druckspüler" },
-            { label: "Dusche", value: "Kunststoffdusche inkl. Vorhang und Duscharmatur" },
-            { label: "Waschbecken", value: "Porzellanbecken inkl. Armatur, Spiegel, Abfluss und Handtuchhalter" },
-            { label: "Bodenabfluss", value: "Optional, PVC, bodeneben integriert" },
-            { label: "Warmwasser", value: "Je nach Bedarf vom Durchlauferhitzer (ca. 5 l) bis zum Boiler (10–500 l)" },
-            { label: "Option", value: "Barrierefreie Ausstattung mit Sicherheitsarmaturen" },
-          ],
-        },
-      ],
+      sourceNote: FAGSI_SOURCE_NOTE,
+      dimensions: [],
+      sections: technicalSections({
+        einsatzdauer: "Temporäre Lösung bis 24 Monate",
+        einsatzart: "Bürogebäude, Schulen oder Kindergärten, Übergangslösung bei Umbau-/Sanierungsmaßnahmen",
+        konstruktion: "Stahlrahmen mit Profilblechwänden oder Kassettenfassade (optional)",
+        nutzlast: "2,0–5,0 kN/m²",
+        schneelast: "1,5 kN/m²",
+        brandschutz: "analog F30",
+        dach: "U = 0,460 W/m²K",
+        wand: "U = 0,208 W/m²K kopfseitig, U = 0,638 W/m²K längsseitig",
+        boden: "U = 0,580 W/m²K",
+        laenge: "6,058 m",
+        breite: "2,500 / 3,000 m",
+        aussenhoehe: "2,800 m",
+        raumhoehe: "2,500 m",
+      }),
+      insulationTable: [],
+      loadNote: "Nutzlast 2,0–5,0 kN/m², Dach-Schneelast im Standard 1,5 kN/m² (Verstärkung auf Anfrage). Die zulässige Schneelast am Aufstellort ist vor Bestellung zu prüfen.",
     },
   },
   {
-    id: "schulcontainer-bildungsgebaeude",
-    slugDe: "schulcontainer-und-bildungsgebaeude",
-    slugEn: "school-containers-education-buildings",
-    name: { de: "Schulcontainer und Bildungsgebäude", en: "School Containers & Education Buildings" },
+    id: "icon-energy",
+    slugDe: "icon-energy",
+    slugEn: "icon-energy",
+    name: { de: "ICON Energy", en: "ICON Energy" },
     excerpt: {
-      de: "Klassenräume, Kitas, Interim-Flächen und modulare Bildungsgebäude.",
-      en: "Classrooms, kindergartens, interim space and modular education buildings.",
+      de: "Die energieeffiziente Mittelfristlösung für 24 bis 60 Monate — als Neubau, Anbau oder Aufstockung für Büro-, Verwaltungs-, Schul- und Kindergartengebäude.",
+      en: "The energy-efficient medium-term solution for 24 to 60 months — as new build, extension or additional storey for office, administration, school and kindergarten buildings.",
     },
     heroLead: {
-      de: "Schulcontainer und Bildungsgebäude werden nicht nur nach Containermaßen geplant, sondern nach Raumprogramm, Nutzerführung, Akustik, Licht, Lüftung, Sanitär, Brandschutz und Genehmigungsfähigkeit.",
-      en: "School containers and education buildings are planned not just by container size, but by room programme, acoustics, light, ventilation, sanitary provision, fire protection and approval requirements.",
+      de: "ICON Energy ist für mittelfristige Projekte mit erhöhten Anforderungen an Wärmedämmung ausgelegt — Stahlrahmen mit Kassetten- und Zusatzfassade, deutlich niedrigere U-Werte als die Basic-Reihen, auch als großformatiges XL-Modul verfügbar.",
+      en: "ICON Energy is designed for medium-term projects with higher insulation requirements — steel frame with cassette and additional façade, significantly lower U-values than the Basic ranges, also available as a large-format XL module.",
     },
-    variants: [
-      { code: "Klassenraum", title: "Klassenraum-Modul", text: "Für temporäre oder dauerhafte Unterrichtsflächen mit klarer Raumstruktur.", einsatz: "Schule und Bildung", planung: "Akustik, Licht, Lüftung und Sanitär klären" },
-      { code: "Kita", title: "Kita- und Betreuungsmodul", text: "Für Gruppenräume, Nebenräume, Sanitärbereiche und kindgerechte Raumkonzepte.", einsatz: "Kita und Betreuung", planung: "Raumprogramm, Sanitär und Erschließung klären" },
-      { code: "Interim", title: "Interim-Gebäude", text: "Ersatzflächen während Sanierung, Umbau oder Kapazitätserweiterung.", einsatz: "temporäre Bildungsfläche", planung: "Standzeit, Genehmigung und Montage klären" },
-      { code: "Sonderbau", title: "Individuelles Bildungsgebäude", text: "Angepasste Gebäudegrößen, Fachräume, Verwaltung, Mensa, Flure, Treppen und technische Sonderanforderungen.", einsatz: "komplexes Raumprogramm", planung: "Grundriss, Technik und Brandschutz klären" },
-    ],
-    detailBlocksDe: [
-      {
-        type: "paragraphs",
-        text: [
-          "Ob einzelner Klassenraum, Kita-Erweiterung oder mehrteilige Interim-Schule: Entscheidend sind klare Grundrisse, robuste Ausstattung, gute Aufenthaltsqualität und eine technische Planung, die Behörden, Nutzer und Projektbeteiligte nachvollziehen können.",
-        ],
-      },
-      {
-        type: "columns",
-        columns: [
-          {
-            heading: "Typische Einsatzbereiche",
-            items: ["Schulen und Klassenräume", "Kitas und Betreuungsgebäude", "Interim während Sanierung", "Verwaltung und Nebenräume", "Ganztag, Mensa und Fachräume"],
-          },
-          {
-            heading: "Planungshinweise",
-            items: [
-              "Raumprogramm, Nutzerzahl und Standort klären",
-              "Akustik, Licht, Lüftung, Sanitär und Brandschutz früh planen",
-              "Grundrisse, Ansichten, Schnitte und Technikdetails vorbereiten",
-              "Downloads für Grundrissbeispiele und Datenblätter ergänzen",
-            ],
-          },
-        ],
-      },
-    ],
-    // TODO(ICON): Platzhalter, 1:1 Struktur wie Bürocontainer — bitte mit echten
-    // Werten für Schulcontainer/Bildungsgebäude ersetzen. Die "Genehmigung &
-    // Regularien"-Zeilen sind eine grobe Orientierung (u. a. aus FAGSI-Recherche
-    // zu temporären Schulbauten) und ersetzen keine rechtliche Prüfung.
-    technicalDescription: {
-      sourceNote: PLACEHOLDER_SOURCE_NOTE,
-      dimensions: buildDimensions(["ca. 1.225 kg", "ca. 1.650 kg", "ca. 1.850 kg", "ca. 2.150 kg", "ca. 2.550 kg"]),
-      sections: baseConstructionSections(),
-      insulationTable: INSULATION_TABLE,
-      loadNote: STANDARD_LOAD_NOTE,
-      extraSections: [
-        {
-          heading: "Genehmigung & Regularien",
-          rows: [
-            { label: "Nutzungsdauer", value: "Temporäre Schulbauten werden oft als befristete bauliche Anlage genehmigt (in der Praxis nicht selten bis ca. 24 Monate) — Fristen und Verfahren sind je nach Bundesland und zuständiger Bauaufsicht unterschiedlich und im Einzelfall zu prüfen" },
-            { label: "Brandschutz", value: "Brandschutzkonzept mit Fluchtwegen und Rauchwarnmeldern; in mehreren Bundesländern sind vereinfachte Zulassungen (vBG) für Schulbauten in Modulbauweise möglich" },
-            { label: "Barrierefreiheit", value: "Barrierefreie Ausführung nach DIN-Vorgaben planbar" },
-            { label: "Raumluft", value: "Schadstoffarme, geprüfte Materialien; niedrige VOC-Werte deutlich unter üblichen Richtwerten anstrebbar" },
-            { label: "Rückbau", value: "Vollständig rückbaubar und versetzbar bei Nutzungsende" },
-          ],
-        },
-      ],
-    },
-  },
-  {
-    id: "baustellencontainer",
-    slugDe: "baustellencontainer",
-    slugEn: "site-containers",
-    name: { de: "Baustellencontainer", en: "Site Containers" },
-    excerpt: {
-      de: "Baustellencontainer organisieren Bauleitung, Sozialräume, Umkleiden, Sanitär, Lager und Material direkt am Projektstandort.",
-      en: "Site containers organize management, welfare, changing, sanitary and storage facilities right at the project site.",
-    },
-    heroLead: {
-      de: "Baustellencontainer schaffen die notwendige Infrastruktur auf dem Baufeld: Bauleitung, Besprechung, Sozialräume, Umkleiden, Sanitär, Lager oder Materialausgabe. Sie müssen robust, schnell verfügbar und praktisch sein.",
-      en: "Site containers provide the infrastructure a construction site needs: management, meetings, welfare, changing, sanitary or storage — robust, quickly available and practical.",
-    },
-    introExtra:
-      "Je nach Projekt werden einzelne Container oder komplette Baustelleneinrichtungen geplant. Entscheidend sind Stellfläche, Kran- und Zufahrtslogik, Anschlüsse, Wegeführung, Sicherheit und die Anpassung an Bauphasen.",
-    variants: [
-      { code: "Büro", title: "Bauleitungs- und Projektbüro", text: "Arbeits- und Besprechungsräume für Bauleitung, Projektsteuerung und Dokumentation.", einsatz: "Bauleitung, Besprechung", planung: "Büroflächen nahe am Baufeld" },
-      { code: "Sozial", title: "Sozial- und Aufenthaltscontainer", text: "Pausen-, Umkleide- und Aufenthaltsbereiche für Mitarbeitende.", einsatz: "Sozialräume, Pausen", planung: "robuste Nutzung" },
-      { code: "Sanitär", title: "Sanitärbereich für Baustellen", text: "WC-, Dusch- und Waschbereiche als Ergänzung zur Baustelleneinrichtung.", einsatz: "Sanitärversorgung", planung: "Anschlusslogik beachten" },
-      { code: "Lager", title: "Lager- und Materialcontainer", text: "Sichere Lagerung für Werkzeuge, Material und Ausrüstung.", einsatz: "Material, Werkzeug", planung: "sicher und zugänglich" },
-      { code: "Anlage", title: "Komplette Baustelleneinrichtung", text: "Kombination aus Büro, Sozial, Sanitär, Lager und Technik.", einsatz: "größere Baustellen", planung: "Bauphasen abstimmen" },
-    ],
+    categories: categoriesFor("icon-energy"),
     detailBlocksDe: [
       {
         type: "paragraphs",
         heading: "Produktbeschreibung und Einsatzbereiche",
         text: [
-          "Eine gute Baustelleneinrichtung unterstützt den Bauablauf. Sie schafft klare Anlaufstellen, kurze Wege und sichere Lagerflächen. Gleichzeitig muss sie flexibel bleiben, weil sich Baufelder, Zufahrten und Projektphasen verändern können.",
-          "ICON kann einzelne Einheiten oder kombinierte Anlagen strukturieren. Dabei geht es nicht nur um Container, sondern auch um Logistik, Montage, Anschlüsse und eine nachvollziehbare Dokumentation.",
+          "ICON Energy eignet sich für Büro- und Verwaltungsgebäude, Schulen und Kindergärten als Neubau, Anbau oder Aufstockung mit einer Nutzungsdauer von etwa 24 bis 60 Monaten — bei deutlich besserer Wärmedämmung als die Basic-Reihen.",
+          "Neben den Standardmodulen mit 6,058 m Länge stehen XL-Module mit 14,646 m sowie eigene Treppencontainer-Typen für größere Anlagen zur Verfügung.",
         ],
       },
     ],
-    // TODO(ICON): Platzhalter, 1:1 Struktur wie Bürocontainer — bitte mit echten
-    // Werten für Baustellencontainer ersetzen.
     technicalDescription: {
-      sourceNote: PLACEHOLDER_SOURCE_NOTE,
-      dimensions: buildDimensions(["ca. 1.225 kg", "ca. 1.650 kg", "ca. 1.850 kg", "ca. 2.150 kg", "ca. 2.550 kg"]),
-      sections: baseConstructionSections(),
-      insulationTable: INSULATION_TABLE,
-      loadNote: STANDARD_LOAD_NOTE,
+      sourceNote: FAGSI_SOURCE_NOTE,
+      dimensions: [],
+      sections: technicalSections({
+        einsatzdauer: "Mittelfristige Lösung ab 24 bis 60 Monate",
+        einsatzart: "Büro- und Verwaltungsgebäude, Schulen, Kindergärten als Neubau, Anbau, Aufstockung",
+        konstruktion: "Stahlrahmen mit Kassettenfassade und Zusatzfassade",
+        nutzlast: "2,0–5,0 kN/m²",
+        schneelast: "1,5 kN/m²",
+        brandschutz: "analog F30",
+        dach: "U = 0,347 W/m²K (o. Zusatzdach), U ≤ 0,200 W/m²K (m. Zusatzdach)",
+        wand: "U = 0,209 W/m²K",
+        boden: "U = 0,293 W/m²K",
+        laenge: "6,058 / 14,646 m",
+        breite: "3,000 m / 3,400 m",
+        aussenhoehe: "3,150 m",
+        raumhoehe: "2,750 m",
+      }),
+      insulationTable: [],
+      loadNote: "Nutzlast 2,0–5,0 kN/m², Dach-Schneelast im Standard 1,5 kN/m² (Verstärkung auf Anfrage). Die zulässige Schneelast am Aufstellort ist vor Bestellung zu prüfen.",
     },
   },
   {
-    id: "aufenthalts-sozialraeume",
-    slugDe: "aufenthalts-und-sozialraeume",
-    slugEn: "break-and-welfare-rooms",
-    name: { de: "Aufenthalts- und Sozialräume", en: "Break & Welfare Rooms" },
+    id: "icon-comfort",
+    slugDe: "icon-comfort",
+    slugEn: "icon-comfort",
+    name: { de: "ICON Comfort", en: "ICON Comfort" },
     excerpt: {
-      de: "Aufenthalts- und Sozialräume bieten Pausen-, Umkleide-, Kantinen- und Gemeinschaftsflächen für intensive temporäre Nutzung.",
-      en: "Break and welfare rooms provide space for breaks, changing, canteens and shared use under intensive temporary conditions.",
+      de: "Die langfristige Mietlösung in Modulbauweise — für Büro- und Verwaltungsgebäude, die dauerhaft ab 60 Monaten Komfort und Architektur auf hohem Niveau bieten sollen.",
+      en: "The long-term rental solution in modular construction — for office and administration buildings that need lasting comfort and architecture from 60 months onward.",
     },
     heroLead: {
-      de: "Aufenthalts- und Sozialcontainer schaffen Räume, in denen Menschen Pause machen, sich umkleiden, essen oder organisatorische Abläufe erledigen. Sie werden auf Baustellen, in Industriearealen, Unterkünften oder temporären Anlagen eingesetzt.",
-      en: "Break and welfare containers give people a place to rest, change, eat or handle daily routines — used on construction sites, industrial areas, accommodation and temporary complexes.",
+      de: "ICON Comfort vereint die Flexibilität eines Mietsystems mit dem Komfort eines auf Langzeitnutzung ausgelegten Modulgebäudes — für Empfangsgebäude, Büro- und Verwaltungsflächen mit hohem Anspruch an Architektur und Ausstattung.",
+      en: "ICON Comfort combines the flexibility of a rental system with the comfort of a module building designed for long-term use — for reception buildings, office and administration space with high architectural and fit-out standards.",
     },
-    introExtra:
-      "Wichtig sind robuste Oberflächen, gute Reinigung, angenehmes Raumklima, ausreichend Bewegungsfläche und eine Aufteilung, die zu Nutzerzahl und Betriebsablauf passt.",
-    variants: [
-      { code: "Pause", title: "Pausen- und Aufenthaltsraum", text: "Temporärer Aufenthaltsbereich für Mitarbeitende, Besucher oder Bewohner.", einsatz: "Pause, Aufenthalt", planung: "Möblierung beachten" },
-      { code: "Umkleide", title: "Umkleidecontainer", text: "Robuste Umkleidebereiche mit Spinden, Sitzflächen und optionaler Sanitärnähe.", einsatz: "Umkleiden, Personal", planung: "Reinigung mitdenken" },
-      { code: "Kantine", title: "Kantinen- oder Essbereich", text: "Größere Aufenthaltsfläche für Essen, Pausen und gemeinschaftliche Nutzung.", einsatz: "Kantine, Gemeinschaft", planung: "Nutzerzahl klären" },
-      { code: "Anlage", title: "Sozialbereich als Anlage", text: "Kombination aus Aufenthalts-, Umkleide-, Sanitär- und Verwaltungsbereichen.", einsatz: "Baustellen, Industrie", planung: "Bereiche verbinden" },
-      { code: "Sonderbau", title: "Sozialräume als Sonderbau", text: "Individuelle Raumaufteilung, Oberflächen, Ausstattung oder Betreiberanforderungen.", einsatz: "projektspezifisch", planung: "Nutzung abstimmen" },
-    ],
+    categories: categoriesFor("icon-comfort"),
     detailBlocksDe: [
       {
         type: "paragraphs",
         heading: "Produktbeschreibung und Einsatzbereiche",
         text: [
-          "Sozialräume müssen im Alltag funktionieren. Zu kleine oder schlecht organisierte Räume führen schnell zu Engpässen. Deshalb werden Nutzerzahl, Aufenthaltsdauer, Reinigung, Möblierung und Nähe zu Sanitärbereichen früh betrachtet.",
-          "Je nach Projekt können einfache Pausencontainer, Umkleiden, Kantinenbereiche oder vollständige Sozialanlagen sinnvoll sein.",
+          "ICON Comfort ist die langfristige Mietlösung in Modulbauweise, ab etwa 60 Monaten Standzeit — für Büro- und Verwaltungsgebäude, beispielsweise Empfangsgebäude, als Neubau, Anbau oder Aufstockung.",
+          "Leermodule, Funktionsmodule (WC-Bereiche) und Treppenmodule lassen sich zu vollständigen, mehrgeschossigen Bürogebäuden mit durchdachter Architektur kombinieren.",
         ],
       },
     ],
-    // TODO(ICON): Platzhalter, 1:1 Struktur wie Bürocontainer — bitte mit echten
-    // Werten für Aufenthalts-/Sozialräume ersetzen.
     technicalDescription: {
-      sourceNote: PLACEHOLDER_SOURCE_NOTE,
-      dimensions: buildDimensions(["ca. 1.225 kg", "ca. 1.650 kg", "ca. 1.850 kg", "ca. 2.150 kg", "ca. 2.550 kg"]),
-      sections: baseConstructionSections(),
-      insulationTable: INSULATION_TABLE,
-      loadNote: STANDARD_LOAD_NOTE,
+      sourceNote: FAGSI_SOURCE_NOTE,
+      dimensions: [],
+      sections: technicalSections({
+        einsatzdauer: "Langfristige Lösung ab 60 Monate",
+        einsatzart: "Büro- und Verwaltungsgebäude, bspw. Empfangsgebäude als Neubau, Anbau, Aufstockung",
+        konstruktion: "Stahlrahmen mit Zusatzfassade",
+        nutzlast: "3,0–5,0 kN/m²",
+        schneelast: "1,5 kN/m²",
+        brandschutz: "analog F30–F90",
+        dach: "U ≤ 0,200 W/m²K (mit Zusatzdach)",
+        wand: "U ≤ 0,240 W/m²K (mit Zusatzfassade)",
+        boden: "U ≤ 0,2300 W/m²K (mit Estrich)",
+        laenge: "14,000 m",
+        breite: "3,000 / 3,250 m",
+        aussenhoehe: "3,450 m",
+        raumhoehe: "2,979 m",
+      }),
+      insulationTable: [],
+      loadNote: "Nutzlast 3,0–5,0 kN/m², Dach-Schneelast im Standard 1,5 kN/m² (Verstärkung auf Anfrage). Die zulässige Schneelast am Aufstellort ist vor Bestellung zu prüfen.",
     },
   },
 ];
